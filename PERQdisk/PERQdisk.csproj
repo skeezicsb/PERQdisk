@@ -1,0 +1,114 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <ProjectGuid>{72CFDC6A-3678-458D-BA15-D84D38F3041C}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PERQdisk</RootNamespace>
+    <AssemblyName>PERQdisk</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <StartupObject>PERQdisk.PERQdisk</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE_ENABLED</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Helper.cs" />
+    <Compile Include="PhysicalDisk\POSFloppy.cs" />
+    <Compile Include="PhysicalDisk\ShugartDisk.cs" />
+    <Compile Include="POS\File.cs" />
+    <Compile Include="POS\Partition.cs" />
+    <Compile Include="PhysicalDisk\LogicalDisk.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="POS\Volume.cs" />
+    <Compile Include="Log.cs" />
+    <Compile Include="CLI\CommandAttribute.cs" />
+    <Compile Include="CLI\CommandExecutor.cs" />
+    <Compile Include="CLI\CommandNode.cs" />
+    <Compile Include="CLI\CommandProcessor.cs" />
+    <Compile Include="CLI\CommandPrompt.cs" />
+    <Compile Include="Paths.cs" />
+    <Compile Include="RT11\Directory.cs" />
+    <Compile Include="PhysicalDisk\Block.cs" />
+    <Compile Include="RT11\Volume.cs" />
+    <Compile Include="RT11\Commands.cs" />
+    <Compile Include="POS\Commands.cs" />
+    <Compile Include="PhysicalDisk\MicropolisDisk.cs" />
+    <Compile Include="PhysicalDisk\RT11Floppy.cs" />
+    <Compile Include="PhysicalDisk\IDiskDevice.cs" />
+    <Compile Include="RT11\Radix50.cs" />
+    <Compile Include="POS\Device.cs" />
+    <Compile Include="RT11\Device.cs" />
+    <Compile Include="PhysicalDisk\MFMDisk.cs" />
+    <Compile Include="CLI\DebugCommands.cs" />
+    <Compile Include="CLI\MediaCommands.cs" />
+    <Compile Include="RT11\VolumeOps.cs" />
+    <Compile Include="RT11\DirectoryEntry.cs" />
+    <Compile Include="POS\DeviceInfo.cs" />
+    <Compile Include="POS\VolumeOps.cs" />
+    <Compile Include="POS\FileInfo.cs" />
+    <Compile Include="POS\Directory.cs" />
+    <Compile Include="POS\PathOps.cs" />
+    <Compile Include="POS\Scavenger.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TODO.txt" />
+    <None Include="PNX\Readme.txt" />
+    <None Include="NOTES.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="RT11\" />
+    <Folder Include="PNX\" />
+  </ItemGroup>
+  <Import Project="..\..\PERQemu\PERQmedia\PERQmedia.projitems" Label="Shared" Condition="Exists('..\..\PERQemu\PERQmedia\PERQmedia.projitems')" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <StandardHeader Text=" &#xA; ${FileName}&#xA; &#xA; Author:  ${AuthorName} &lt;${AuthorEmail}&gt;&#xA;&#xA; Copyright (c) ${Year}, ${CopyrightHolder}&#xA;&#xA; This file is part of PERQdisk and/or PERQemu, originally written by&#xA; and Copyright (c) 2006, Josh Dersch &lt;derschjo@gmail.com&gt;&#xA;&#xA; This program is free software: you can redistribute it and/or modify&#xA; it under the terms of the GNU General Public License as published by&#xA; the Free Software Foundation, either version 3 of the License, or&#xA; (at your option) any later version.&#xA;&#xA;   This program is distributed in the hope that it will be useful,&#xA;   but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;   GNU General Public License for more details.&#xA;&#xA; You should have received a copy of the GNU General Public License&#xA; along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.&#xA;" IncludeInNewFiles="True" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>
