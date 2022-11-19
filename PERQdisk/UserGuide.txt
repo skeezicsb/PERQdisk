@@ -1,0 +1,396 @@
+﻿
+PERQdisk User's Guide
+=====================
+
+A quick & dirty guide to the PERQ disk munger
+
+
+
+1.0  Introduction
+-----------------
+
+PERQdisk is a tool for opening and reading PERQ media archives.  It uses the
+same PERQmedia library as PERQemu, the emulator.  This means all supported disk
+formats can be read, containing either POS filesystems or RT-11 floppy volumes.
+Currently there is no information available about the low-level implementation
+of PNX filesystems, but these may be supported in a future release.
+
+PERQdisk is a console application written in C# targeting .NET Framework 4.8.
+It will run on any system that can run PERQemu; please see the PERQemu User's
+Guide for details.
+
+
+1.1  Getting Started
+--------------------
+
+There are no special installation steps required.  Download the release from
+GitHub and unpack the PERQemu.zip archive in any convenient location.  To run
+the program:
+
+    Windows:    Double-click the PERQdisk.exe icon
+
+    Mac OS X,
+    Linux:      Open a Terminal window and change to the PERQdisk directory;
+                Type "mono PERQdisk.exe".
+
+On all platforms, a banner is printed and the command line interface (CLI) ">"
+prompt is issued.  From here all interactions with PERQdisk are through the CLI.
+Like PERQemu, the TAB key provides completion and prompts for arguments as each
+line is typed, with full editing and recall features.
+
+You may also provide the name of a media file to open on the command line when
+launching the program:
+
+% mono PERQdisk.exe -h
+Usage:  PERQdisk [-h] [-v] [-s <file>] [<disk>]
+
+    -h      print this help message
+    -v      print version information
+    -s file read startup commands from file
+    disk    Disk image to load
+
+
+1.2  Loading and Unloading
+--------------------------
+
+PERQdisk allows you to interrogate one media image at a time.  It automatically
+determines what type of volume or filesystem is contained in the file, changing
+the command set and prompt depending on the type.  This means:
+
+    POS filesystem (hard disk or floppy):
+        Commands to navigate the filesystem are based on POS and use the
+        POS pathname syntax.  Files may be typed to the screen or copied
+        from the virtual image to the host.  The disk label may be updated
+        and the file transcribed into a different format (PHD or PRQM) but
+        no changes to the filesystem are possible; use PERQemu for that.
+
+    RT-11 volume (floppy only):
+        Commands to manipulate an RT-11 "data" floppy are based on the POS
+        FLOPPY command; PERQdisk can (in simple cases) even accept command
+        files in POS format to read and write files to and from the floppy.
+        New floppies may be created and formatted, files may be viewed,
+        deleted, renamed, or copied to the host.  The disk label may be
+        edited and floppies may be saved in any supported format (IMD, "raw"
+        or PFD, PRQM).
+
+When no image is loaded, the basic prompt is a plain ">" and a limited subset
+of commands is available.  To see what files are available, the "list" command
+looks in the current working directory for any eligible files (based on the
+list of known file extensions).  Without arguments, "list" looks in the current
+directory, but if given you can specify another location:
+
+> list
+> list ../PERQemu/Disks
+
+You can use the "cd" and "pwd" commands to move around the local filesystem or
+print out where you are.
+
+To load a file, simply type "load" and the pathname of a file to load.  PERQdisk
+probes the file for a valid filesystem or volume signature, and if found builds
+an in-memory copy of the disk image so that you can explore it, changing the
+prompt accordingly:
+
+    POS:    The program's prompt reflects your current directory in the
+            POS filesystem, starting at the "root" of the device (typically
+            "sys:" for a hard disk).  Use the POS "path" command to change
+            the current directory.
+
+    RT-11:  The prompt changes to "FLOPPY>" and the command set is updated
+            to mimic the POS FLOPPY program's syntax.  RT-11 floppy volumes
+            are "flat" (no subdirectories) and use a rigid "6.3" filename
+            format, much like old versions of DOS.
+
+When the disk image is changed in any way (for POS, the media file's header is
+changed, or for RT-11 any updates to the contents) the prompt includes a "*" to
+reflect this.  You must manually issue the "save", "save as" or "save with"
+command to save your changes permenently; otherwise they are lost when PERQdisk
+exits.  Like PERQemu, "save" updates the file in-place, using the same name and
+format as the original.  "save as" lets you give the image a new name, while
+"save with" lets you specify a new name and archive format.  The PERQemu User's
+Guide explains the PERQmedia formats in more detail.
+
+To unload a disk and return to the top-level prompt, the "unload" (or "done")
+command unmounts the current volume and any un-saved changes are lost.  At any
+prompt the "quit" command exits the program immediately.
+
+
+1.3  Basic Commands
+-------------------
+
+A brief summary of the top-level commands is given below.  As PERQdisk is still
+in active development, this may change frequently.  You can type "commands" at
+any prompt to get a summary of the commands available, or just press TAB to see
+what input the program expects next.
+
+    about       Print the program's banner.
+
+    cd          Change the current directory.  This uses the syntax
+                appropriate for your host (Windows or Unix) and sets
+                the default directory for loading or saving files.
+
+    create      At the top level, new blank RT11 floppies may be created;
+                these can then be loaded and used without having to run
+                PERQemu.  (You have to use PERQemu to create a new POS
+                hard disk or filesystem floppy.)
+
+    help        Brief on-line help.  (Incomplete.)
+
+    list, ls    Show the available media archives available in the
+                current directory.
+
+    pwd         Show the current directory (on the host).
+
+    load        Load a media file.
+
+    show        Show the details of a media archive.  Depending on the
+                file type, may include text and (eventually) image labels.
+                
+    quit        Exit PERQdisk.  Y'know, to go run PERQemu!
+
+
+1.4  POS Commands
+-----------------
+
+The original PERQdisk allowed a simple way to navigate and view or extract files
+from a POS hard disk image.  This version provides all the same functions but
+with a few more bells and whistles:
+
+POS volume mounted.
+Sys:>   
+Possible completions are:
+    cat            cd             check...       commands       compare        
+    copy           details        directory      done           dump           
+    info           list           ls             more           path           
+    pause          pwd            quit           save...        set...         
+    show...        tree           type           unload         
+
+The basic host navigation commands (cd, ls/list, pwd) are as described above.
+With the caveat that many of these are incomplete or may be debugging commands
+to be removed in the release version, the basic functions are as follows:
+
+    cat         Dump a file to the screen without pauses (see "type" below).
+
+    compare     Check that a POS file and a file on the host are identical.
+                (Not yet implemented)
+
+    copy        Copy file(s) to the host.  Currently does not do any option
+                or switch processing; see section 1.4.1 below for details.
+
+    details     Dump a summary of the mounted filesystem and partitions,
+                similar to the POS DETAILS command.
+
+    directory   Show the contents of a directory.  With no arguments, dumps
+                the current directory, but accepts wildcards or full POS
+                path specifications.
+
+    done,       Dismounts the current filesystem and returns to the top-level
+    unload      PERQdisk prompt.
+
+    info        (Debugging)  Shows internal filesystem information about a
+                given argument.
+
+    more, type  Dump a (text) file to the screen, pausing at the end of
+                each page, or when ^L is encountered (like POS TYPEFILE).
+
+    path        With no argument, shows the current directory in the POS
+                filesystem; with an argument, changes to that directory.
+                (The current POS path is also shown in the prompt.)
+
+    pause       Used in command files, this command prints a message on the
+                screen and waits for the user to press RETURN.
+
+    tree        Displays a "graphical" representation of the filesystem,
+                like the POS DIRTREE command.  Accepts an optional argument
+                to start the display at a given partition or directory.
+
+The "set", "save" and "show" prefixes are common to RT-11 disks as well; they
+are discussed below.
+
+
+1.4.1  POS COPY Command
+-----------------------
+
+Besides using "type" to view files on the screen, the copy command is the most
+useful command when interrogating POS filesystems.  The general form is:
+
+Sys:> copy source [destination]
+
+If "source" is a device ("sys:"), a partition ("sys:boot" or ":boot") or a
+directory name, a recursive copy from that starting point is performed.  In
+this case, the optional destination directory must resolve to a directory on
+the host.  If _not_ given, the default output directory is used.
+
+If "source" is a wildcard, then all of the files that match are copied and
+the optional destination must again be a directory.
+
+If "source" is a single file, the destination may be a directory OR a file name:
+
+    Sys:boot> copy disk.params disktab
+        => copies "Sys:boot>Disk.params" to "disktab" on the host)
+
+    Sys:boot> copy disk.params outdir
+        => copies "Sys:boot>Disk.params" to "outdir\Disk.params" (Windows)
+                                         or "outdir/disk.params" (Unix)
+
+PERQdisk tries to provide some reasonable defaults about where files end up in
+the host filesystem.  The general rule is:
+
+    If "destination" is given, use it as specified as the root directory
+    for the copied files;
+
+    If "destination" is not provided, use the "default output directory"
+    instead (defined as the subdirectory "Output" in the folder where you
+    unpack/launch PERQdisk from).
+
+For casual use, plucking a few files out of an image ("copy *.pas .") should be
+simple and flexible and put things where you want.  For industrial strength, pro-
+level filesystem munging, PERQdisk extends the notion of the "default output
+directory" to a path that includes the disk name and full POS path.  For example
+(assuming the loaded file is "f0.phd" this "high speed, low drag" configuration
+means:
+
+    Sys:> copy .
+
+would create
+
+    Output/f0/sys/boot/...
+    Output/f0/sys/user/...
+    (etc.)
+
+And loading another disk (from, say, the archive "g7.prqm") would produce:
+
+    Output/g7/sys/boot/...
+    Output/g7/sys/accent/...
+    (and so on)
+
+With a library of hundreds of disk images to catalog, the aim is to facilitate
+the transfer of thousands of files without fuss.  The implementation may change
+if it's confusing or unwieldy in practice!
+    
+
+Unlike the FLOPPY program, there aren't any global "ASK", "VERIFY" or "CONFIRM"
+flags that can be set by separate commands; in POS, COPY has switches that let
+you specify whether or not to just clobber existing files or not.  Currently
+PERQdisk will NOT clobber directories (meaning it will just merge files into an
+existing directory, only creating new ones as needed) and it WILL clobber files
+that have the same name.  It _should_ respect read-only permissions, however,
+so if you protect extracted files PERQdisk shouldn't come along and stomp on
+them -- but this hasn't been tested.  In general, assume that your default umask
+(or Windows equivalent) is used when creating files and if PERQdisk can't write
+a file it says so and skips it.
+
+In the Perl version a large number of switches are available to modify COPY's
+behavior; this switch parsing has not yet been ported to PERQdisk.  Thus, the
+following defaults are used:
+
+    On Unix, case folding is ON; POS filenames are shifted to lower case
+    when transferred to the host.  On Windows, the original file names are
+    used (as Windows is case-insensitive, like POS).
+
+    Recursion is ON; if a device, partition or directory name is specified,
+    all the subdirectories are copied as well.  If a single file name is
+    given, or a wildcard pattern resolves to files only, no recursion is
+    performed.
+
+    Preserving file times is ON (subject to actually being implemented).
+    The idea is to try to set the timestamps on the copied file to match
+    the originals from the media, within the limitations of the C# runtime
+    and/or host OS.  A fussy, minor detail. :-)
+
+A global "dry run" flag used in debugging is available if you build from source.
+This lets you see what PERQdisk intends to do without spewing a ton of stuff
+all over your local filesystem.
+
+
+1.5  RT-11 Floppy Commands
+--------------------------
+
+PERQdisk implements much of the command set of the POS FLOPPY program.  This was
+implemented in "perqfloppy.pl" (unreleased but available upon request) as a way
+to use POS-compatible command files to quickly extract sets of files from RT-11
+format data floppies.  There appear to be a bewildering number of options, but
+most of them are simple switches and quite a few can be ignored (they're only
+for compatibility with FLOPPY command files and are no-ops in PERQdisk):
+
+RT11 volume mounted.
+FLOPPY>  
+Possible completions are:
+    ascii          ask            auto           binary         cat            
+    cd             check...       commands       compare        compress       
+    confirm        delete         density        directory      dismount       
+    done           dump...        duplicate      fast           floppyget      
+    floppyput      format         fsfloppy       get            list           
+    ls             mode           more           mount          noask          
+    noconfirm      noverify       pause          put            pwd            
+    quit           rename         safe           save...        set...         
+    show...        sides          text           type           unload         
+    update         verify         zero           
+
+The basic navigation (cd, list/ls, pwd) and other common commands (unload/done,
+quit) are as described above in section 1.3.  The media manipulation commands
+(save, set, show) in common with the POS menu are described below.  For working
+with RT-11 floppies the essential commands are:
+
+    cat, more,      Dump the contents of a floppy file to the screen.
+    type            As with their POS equivalents,  "cat" doesn't pause,
+                    while "more" or "type" does one screenful at a time.
+
+    compare         Check that a file on the floppy matches one on the
+                    host.  (Not yet implemented)
+
+    compress        Coalesces the free space on the floppy.  Essentially
+                    "defragments" the floppy, but way, WAY faster than
+                    on the actual 8" drive.  (Not yet implemented)
+
+    delete          Delete files from the floppy.
+
+    get             Copy files from the floppy to the host.  See below.
+
+    pause           As with POS, prints a message and waits for RETURN.
+
+    put             Copy files from the host to the floppy.  See below.
+
+    rename          Rename a file on the floppy.
+
+    format, zero    Effectively erase the floppy by creating a new,
+                    empty volume and directory structure on the disk.
+
+
+These commands mainly set flags or conditions that affect how some data transfer
+or other operations behave:
+
+    ascii, auto,    Set the transfer mode to one of these values.
+    binary, text
+
+    mode            Show the current transfer mode.
+
+    ask, noask      Set or unset the ASK flag, which tells PERQdisk to
+                    prompt for confirmation (or not) before performing
+                    certain actions.
+
+    confirm,        Set or unset the CONFIRM flag, which tells PERQdisk
+    noconfirm       to prompt for certain "dangerous" actions; in POS
+                    these would be commands that overwrite files or in
+                    some way delete or modify data.
+
+    fast, safe      Fast is a shortcut for noask, noconfirm, noverify;
+                    safe does the opposite.
+
+
+All of the following are compatibility commands; they are accepted as no-ops
+in PERQdisk:
+
+    sides, density, verify, noverify, mount, dismount, fsfloppy,
+    floppyget, floppyput, duplicate
+
+
+TODO:
+
+    RT-11 put/get
+
+    Common commands:  save, set, show
+
+    Talkin' 'bout line endings
+
+
+Last modified:  Sat Nov 19 12:32:36 PST 2022

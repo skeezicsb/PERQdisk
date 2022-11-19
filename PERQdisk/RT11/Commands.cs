@@ -322,10 +322,6 @@ namespace PERQdisk.RT11
         /// (optionally saved with a specific filename on the host) or a wildcard
         /// and a destination directory to be named.
         /// </summary>
-        /// <remarks>
-        /// ALL of this explanatory text needs to be in the User Guide, not here
-        /// where nobody will read it!
-        /// </remarks>
         [Command("rt11 get", "Get one or more files from the floppy")]
         private void GetFiles(string filePat, string hostName = "")
         {

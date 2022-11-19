@@ -9,7 +9,8 @@ PERQdisk Readme
 PERQdisk is a standalone utility to navigate and extract files from archived
 PERQ media.  It uses the same style of command-line interpreter as PERQemu and
 can read any format supported by the PERQmedia library, with the ability to
-transpose between them.
+transpose between them.  Please see the file UserGuide.txt for information about
+installing and running PERQdisk.
 
 This utility is still in active development; for more information about PERQemu,
 the PERQmedia storage format, and other PERQ information in general, please see
