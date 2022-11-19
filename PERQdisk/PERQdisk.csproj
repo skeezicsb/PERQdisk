@@ -89,6 +89,7 @@
     <None Include="PNX\Readme.txt" />
     <None Include="NOTES.txt" />
     <None Include="UserGuide.txt" />
+    <None Include="COPYING.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="RT11\" />
