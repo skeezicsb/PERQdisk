@@ -101,13 +101,18 @@ prompt accordingly:
             format, much like old versions of DOS.
 
 When the disk image is changed in any way (for POS, the media file's header is
-changed, or for RT-11 any updates to the contents) the prompt includes a "*" to
-reflect this.  You must manually issue the "save", "save as" or "save with"
-command to save your changes permenently; otherwise they are lost when PERQdisk
-exits.  Like PERQemu, "save" updates the file in-place, using the same name and
-format as the original.  "save as" lets you give the image a new name, while
-"save with" lets you specify a new name and archive format.  The PERQemu User's
-Guide explains the PERQmedia formats in more detail.
+changed, or any updates to the contents for RT-11 floppies) the prompt includes
+a "*" to reflect this.
+
+    ** IMPORTANT **
+
+    As with PERQemu you must manually issue the "save", "save as" or "save
+    with" command to save your changes permanently; otherwise they are lost
+    when PERQdisk exits.  Like PERQemu, "save" updates the file in-place,
+    using the same name and format as the original; "save as" lets you give
+    the image a new name, while "save with" lets you specify a new name and
+    archive format.  The PERQemu User's Guide explains the PERQmedia formats
+    in more detail.
 
 To unload a disk and return to the top-level prompt, the "unload" (or "done")
 command unmounts the current volume and any un-saved changes are lost.  At any
@@ -146,6 +151,10 @@ what input the program expects next.
                 file type, may include text and (eventually) image labels.
                 
     quit        Exit PERQdisk.  Y'know, to go run PERQemu!
+
+
+TODO:   define wildcards and how they're resolved for both local filenames
+        and within POS or RT11 volumes!
 
 
 1.4  POS Commands
@@ -362,7 +371,7 @@ or other operations behave:
     ascii, auto,    Set the transfer mode to one of these values.
     binary, text
 
-    mode            Show the current transfer mode.
+    mode            Show the current transfer mode.  See section 1.5.2.
 
     ask, noask      Set or unset the ASK flag, which tells PERQdisk to
                     prompt for confirmation (or not) before performing
@@ -374,7 +383,7 @@ or other operations behave:
                     some way delete or modify data.
 
     fast, safe      Fast is a shortcut for noask, noconfirm, noverify;
-                    safe does the opposite.
+                    safe does the opposite.  See section 1.5.3 below.
 
 
 All of the following are compatibility commands; they are accepted as no-ops
@@ -384,13 +393,129 @@ in PERQdisk:
     floppyget, floppyput, duplicate
 
 
-TODO:
+1.5.1  Floppy Transfers
+-----------------------
 
-    RT-11 put/get
+The floppy GET and PUT commands are enhanced versions of the POS FLOPPY program
+in that they allow the use of wildcards.  Similar rules to the POS filesystem
+COPY command apply; the same "<cmd> source [destination]" syntax is used, but
+the meanings are reversed depending on the direction of the transfer.  Note that
+due to the severe restrictions on file naming imposed by RT-11 and its use of
+the limited "Radix 50" character set, PERQdisk tries to provide the same sort of
+"intuitive" parsing as the POS FLOPPY program.  In general this means that file
+names are automatically generated when copying from the host (PUT), while long
+source filenames can be used when copying to the host (GET) as long as the name
+resolves unambiguously to a single floppy file.  For example:
 
-    Common commands:  save, set, show
+    put longfilename.text
+        => copied to the floppy as LONGFI.TEX
 
-    Talkin' 'bout line endings
+    get longfilename.text
+        => gets LONGFI.TEX from the floppy as longfilename.text
+
+    get longfi.tex longfile.someothername
+        => explicitly names the destination file
+
+    get longfi.tex outdir
+        => gets LONGFI.TEX to outdir/LONGFI.TEX
+
+As with POS COPY, the output file name is not case-converted by default on Windows
+systems, but is converted to lower case on Unix (as is the more common convention).
+[A switch or preference setting to change this is desirable/planned.]
+
+Wildcards may also be used with GET and PUT, unlike the POS FLOPPY implementation.
+Because RT-11 floppies have only one flat directory, all directory paths are
+stripped, so "put ../something/file.txt" would produce "file.txt" on the floppy.
+
+When copying multiple files from the floppy with GET, any destination argument
+must resolve to a directory on the host, and the original 6.3-format floppy file
+names are used for the output files.  The "@file.cmd" syntax can be very useful
+here, as almost every POS floppy was written with a command file to map the long
+to short names and back again; commonly a "put.cmd" and "get.cmd" are included
+on the floppy for this purpose.
 
 
-Last modified:  Sat Nov 19 12:32:36 PST 2022
+TODO:   the "directory" command is used in POS to produce listings to a text
+        file that facilitates the creation of these command files; it would
+        be nice to add that to PERQdisk!
+
+TODO:   test and document the behavior of "@" syntax; POS requires that any
+        command file run lives on the hard disk (so "get get.cmd; @get") but
+        does PERQdisk have this restriction?  Can we "@get" directly from
+        the floppy!?  (What if the file exists in both places, hmm?)
+
+TODO:   maybe document the naming restrictions of the RAD50 character set
+
+
+1.5.2  Line Endings
+-------------------
+
+On Unix hosts, PERQdisk attempts to automatically identify text files and convert
+line endings for text files.  This works in both directions:  reading a Unix text
+file with plain LF line endings produces a POS CRLF-delimited text file on the
+floppy; when reading a POS text file and writing to a Unix host, CRLFs are
+written out as plain LFs.  The "transfer mode" commands influence this behavior:
+
+    Text mode   Applies the line-ending transformation for text files
+                by default; if a binary file is encountered the user
+                is prompted (if ASK is on) or the file is skipped.  The
+                ASCII command is an alias for TEXT mode.
+
+    Binary mode Skips the line-ending transformation, but if PERQdisk
+                detects a text file and ASK is set, prompts to ask if
+                the conversion should be done.  Otherwise it just copies
+                the file in binary mode.  NOTE:  Accent uses Unix-style
+                LF-only line endings!  If you are transferring files to
+                use with Accent, you might want to explicitly do so in
+                binary mode to avoid conversion.
+
+    Auto mode   The default mode is AUTO, which does its best to detect
+                the file type and do/not do the conversion accordingly.
+
+For compatibility with existing command files, each mode may be directly set by
+just typing it _as_ a command, or as the parameter to the "mode" command.  With
+no argument "mode" prints the mode currently in effect.
+
+
+1.5.3  Safe vs. Fast
+--------------------
+
+Mostly for compatibility, but useful when doing bulk transfers, PERQdisk offers
+most of the POS FLOPPY flags and commands to set them.  These are:
+
+    Ask:        The ASK flag lets you specify whether to do an operation
+                or not, which is mainly useful if you are using wildcards
+                to specify several files but want to selectively skip
+                some of them.  The "ask" command turns this flag on, the
+                "noask" command turns it off.
+
+    Confirm:    Independently, the CONFIRM flag is used to require user
+                intervention if a potentially dangerous command is used
+                ("zero" or "format") or if a file could be overwritten.
+                This way you can turn off ASK mode and copy lots of files
+                quickly, but require a yes/no response if an existing
+                file would be clobbered.  "confirm" turns this on, while
+                "noconfirm" turns it off again.
+
+    Verify:     In POS FLOPPY, files are generally double-checked for
+                errors to make sure no data corruption occurred during
+                transfer.  Since PERQdisk isn't dealing with 40-year-old
+                8" floppy drives with dirty heads, flaky media and aging
+                TTL chips doing data separation of signals over long 50-
+                pin ribbon cables we don't actually implement this and
+                just assume that all the bits are pristine.  :-)  Both
+                the "verify" and "noverify" commands are no-ops.
+
+The shortcuts "safe" and "fast" turn the flags on or off as you'd expect.  The
+default when PERQdisk starts up is "safe."
+
+
+1.6  Common Media Commands
+--------------------------
+
+TODO:   Document the save, set, show commands for dealing with media files
+        and some of the nicer PRQM format features.
+
+
+
+Last modified:  skeezicsb   Sat Nov 19 14:40:17 PST 2022
