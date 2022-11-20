@@ -343,21 +343,64 @@ namespace PERQdisk.RT11
         {
             if (confirm)
             {
-                var ans = PERQdisk.CLI.Yes($"* Delete file [Floppy] {file.Filename} [y]? ", true);
+                var ans = PERQdisk.CLI.Yes($"Delete file [Floppy] {file.Filename} [y]? ", true);
                 if (ans == Doit.No || ans == Doit.Quit) return ans;
             }
 
+            Console.Write($"  [Floppy] {file.Filename} ... ");
+
             _dir.DeleteFile(file);
 
+            Console.WriteLine("Deleted.");
             return Doit.Yes;
         }
 
         /// <summary>
         /// Rename a file on the floppy.
         /// </summary>
-        public int RenameFile()
+        public void RenameFile(DirectoryEntry src, string dst, bool ask)
         {
-            return 0;
+            var dstName = Radix50.Format6dot3(dst);
+            if (string.IsNullOrEmpty(dstName))
+            {
+                Console.WriteLine($"** Could not create floppy name for '{dst}'.");
+                return;
+            }
+
+            if (FileExists(dstName))
+            {
+                Console.WriteLine($"** File {dstName} alreadys exists, cannot rename.");
+                return;
+            }
+
+            if (ask)
+            {
+                var ans = PERQdisk.CLI.Yes($"Rename file [Floppy] {src.Filename} to {dstName} [y]? ", true);
+                if (ans == Doit.No || ans == Doit.Quit) return;
+            }
+
+            Console.Write($"  [Floppy] {src.Filename} => [Floppy] {dstName} ... ");
+
+            var index = FindFileIndex(src.Filename);
+            if (index < 0) throw new InvalidOperationException($"Index failure for {src.Filename}");
+
+            // Tweak the name in all the right places
+            var file = "";
+            var ext = "";
+            Radix50.Split6dot3(dstName, ref file, ref ext);
+
+            // Get back the encoded version and update src
+            var words = Radix50.StringToRad50(file + ext);
+            src.Name0 = words[0];
+            src.Name1 = words[1];
+            src.Ext = words[2];
+            src.Filename = dstName;
+
+            // Write it back
+            _dir.Files[index] = src;
+            _dir.Save();
+
+            Console.WriteLine("Done.");
         }
 
         /// <summary>

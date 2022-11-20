@@ -624,7 +624,14 @@ namespace PERQdisk
         public void DebugLevel(Severity level)
         {
             Log.Level = level;
-            Console.WriteLine($"Debug level now {level}.");
+            Console.WriteLine($"Debug loggin level now {level}.");
+        }
+
+        [Command("debug category")]
+        public void DebugCats(Category category)
+        {
+            Log.Categories = category;
+            Console.WriteLine($"Debug logging category now {category}.");
         }
 #endif
 

@@ -74,10 +74,10 @@ the command set and prompt depending on the type.  This means:
         or PFD, PRQM).
 
 When no image is loaded, the basic prompt is a plain ">" and a limited subset
-of commands is available.  To see what files are available, the "list" command
-looks in the current working directory for any eligible files (based on the
-list of known file extensions).  Without arguments, "list" looks in the current
-directory, but if given you can specify another location:
+of commands is available.  The "list" (or "ls") command looks in the current
+working directory for any eligible media files to load (based on the list of
+known file extensions that PERQmedia can read).  Without arguments, "list"
+looks in the current directory, but if given you can specify another location:
 
 > list
 > list ../PERQemu/Disks
@@ -203,17 +203,22 @@ to be removed in the release version, the basic functions are as follows:
 
     path        With no argument, shows the current directory in the POS
                 filesystem; with an argument, changes to that directory.
-                (The current POS path is also shown in the prompt.)
+                (The current POS path is also shown in the prompt.)  Like
+                modern OSes, POS uses "." to mean the current directory,
+                and ".." to go up a level in the hierarchy.
 
     pause       Used in command files, this command prints a message on the
                 screen and waits for the user to press RETURN.
 
-    tree        Displays a "graphical" representation of the filesystem,
+    tree        Display a "graphical" representation of the filesystem,
                 like the POS DIRTREE command.  Accepts an optional argument
                 to start the display at a given partition or directory.
 
 The "set", "save" and "show" prefixes are common to RT-11 disks as well; they
 are discussed below.
+
+TODO:       POS pathname syntax might need a bit of clarification, or at
+            least a referral to the PERQemu user's guide
 
 
 1.4.1  POS COPY Command
@@ -347,7 +352,7 @@ with RT-11 floppies the essential commands are:
     compare         Check that a file on the floppy matches one on the
                     host.  (Not yet implemented)
 
-    compress        Coalesces the free space on the floppy.  Essentially
+    compress        Coalesce the free space on the floppy.  Essentially
                     "defragments" the floppy, but way, WAY faster than
                     on the actual 8" drive.  (Not yet implemented)
 

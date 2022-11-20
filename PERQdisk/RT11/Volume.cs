@@ -183,6 +183,23 @@ namespace PERQdisk.RT11
         }
 
         /// <summary>
+        /// Find a file on the floppy and return its index in the directory.
+        /// The name is assumed to be in proper floppy 6.3 format.
+        /// </summary>
+        /// <returns>
+        /// >= 0 - index of file
+        ///   -1 - not found
+        /// </returns>
+        public int FindFileIndex(string name)
+        {
+            for (var i = 0; i < _dir.Files.Count; i++)
+            {
+                if (_dir.Files[i].Filename.Equals(name)) return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
         /// Finds files that match a given wildcard pattern.
         /// </summary>
         public List<DirectoryEntry> FindFiles(string pattern)

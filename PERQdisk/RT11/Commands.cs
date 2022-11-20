@@ -96,6 +96,18 @@ namespace PERQdisk.RT11
             PERQdisk.CLI.ShowCommands("rt11");
         }
 
+        private bool WriteCheck()
+        {
+            if (!_disk.Info.IsWritable)
+            {
+                Console.WriteLine("** This floppy is read-only.  Please affix a sticker to the write notch");
+                Console.WriteLine("   and reinsert the diskette in the drive.");
+                return false;
+            }
+
+            return true;
+        }
+
         #region Housekeeping commands
 
         //
@@ -426,12 +438,7 @@ namespace PERQdisk.RT11
         [Command("rt11 put", "Put one or more files onto the floppy")]
         private void PutFiles(string hostPat, string fileName = "")
         {
-            if (!_disk.Info.IsWritable)
-            {
-                Console.WriteLine("** This floppy is read-only.  Please affix a sticker to the write notch");
-                Console.WriteLine("   and reinsert the diskette in the drive. :-)");
-                return;
-            }
+            if (!WriteCheck()) return;
 
             if (Paths.IsPattern(hostPat))
             {
@@ -500,7 +507,23 @@ namespace PERQdisk.RT11
         [Command("rt11 rename", "Rename a file on the floppy")]
         private void RenameFile(string from, string to)
         {
-            Console.WriteLine("Not yet implemented.");
+            if (!WriteCheck()) return;
+
+            if (Paths.IsPattern(from) || Paths.IsPattern(to))
+            {
+                Console.WriteLine("** Sorry, can't rename with wildcards.");
+                return;
+            }
+
+            var fromFile = _volume.FindFile(from);
+
+            if (fromFile.Status != StatusWord.Permanent)
+            {
+                Console.WriteLine($"** No file matching '{from}' found on the floppy.");
+                return;
+            }
+
+            _volume.RenameFile(fromFile, to, _ask);
         }
 
         /// <summary>
@@ -510,6 +533,8 @@ namespace PERQdisk.RT11
         [Command("rt11 delete", "Delete files from the floppy")]
         private void DeleteFiles(string filePat)
         {
+            if (!WriteCheck()) return;
+
             if (Paths.IsPattern(filePat))
             {
                 var found = _volume.FindFiles(filePat);
@@ -556,6 +581,8 @@ namespace PERQdisk.RT11
         [Command("rt11 compress", "Coalesce free space on the floppy")]
         private void CompressFloppy()
         {
+            if (!WriteCheck()) return;
+
             Console.WriteLine("Not yet implemented.");
         }
 
@@ -566,6 +593,8 @@ namespace PERQdisk.RT11
         [Command("rt11 zero", "Erase the floppy and create a new, empty directory")]
         private void ZeroFloppy()
         {
+            if (!WriteCheck()) return;
+
             if (_ask || _confirm)
             {
                 Console.WriteLine("* WARNING: Zeroing the floppy will destroy its contents!");

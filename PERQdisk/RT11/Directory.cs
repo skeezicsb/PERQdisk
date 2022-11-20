@@ -46,10 +46,10 @@ namespace PERQdisk.RT11
 
         public List<DirectoryEntry> Files => _files;
 
+        public const int MaxFiles = 248;        // Just precompute this
+
         public int NumFiles => _numFiles;
         public int BlocksFree => _blksFree;
-
-        public const int MaxFiles = 248;        // Just precompute this
 
         /// <summary>
         /// Clear this instance.  Used when zeroing/formatting new disks.
@@ -268,7 +268,6 @@ namespace PERQdisk.RT11
         /// </remarks>
         public void WriteFile(DirectoryEntry file)
         {
-            // Sanity check.  For now, throw an error.
             if (file.Data == null)
                 throw new InvalidOperationException("Null data in WriteFile");
 
@@ -276,7 +275,8 @@ namespace PERQdisk.RT11
             var last = first + file.Size - 1;
             var lastBytes = file.BitsInLastBlock / 8;
 
-            Console.WriteLine($"{file.Filename} is {file.Size} blocks @ {first}, {lastBytes} bytes @ {last}");
+            Log.Detail(Category.RT11, "WriteFile: {0} is {1} blocks @ {2}, {3} bytes @ {4}",
+                                      file.Filename, file.Size, first, lastBytes, last);
 
             var offset = 0;
 
@@ -289,7 +289,6 @@ namespace PERQdisk.RT11
                 _disk.PutSector(blk, (blk == last ?
                                       Helper.FillFrom(file.Data, offset, 512) :
                                       Helper.CopyFrom(file.Data, offset, 512)));
-
                 offset += 512;
             }
         }
@@ -312,7 +311,6 @@ namespace PERQdisk.RT11
             // Find a hole!  Bail out if there's not enough room
             var slot = FindHole(blocks);
             if (slot < 0) return -2;
-
 
             // Is the found hole the correct size?
             var freeBlocks = _files[slot].Size - blocks;

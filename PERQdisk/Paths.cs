@@ -33,7 +33,11 @@ namespace PERQdisk
     public static class Paths
     {
         /// <summary>
-        /// Default directory for PERQ hard and floppy disk images.
+        /// Default directory (besides ".") to look for PERQ hard and floppy disk
+        /// images.  For PERQdisk this should be a stored default, or possibly
+        /// even a stack or $PATH-like variable?  That way it could be pointed at
+        /// a local PERQemu/Disks directory, or a CIFS share or NFS mount on the
+        /// NetApp.  (Or is that just me?)
         /// </summary>
         public static string DiskDir
         {
