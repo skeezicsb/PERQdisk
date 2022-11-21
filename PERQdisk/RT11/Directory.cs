@@ -51,6 +51,7 @@ namespace PERQdisk.RT11
         public int NumFiles => _numFiles;
         public int BlocksFree => _blksFree;
 
+
         /// <summary>
         /// Clear this instance.  Used when zeroing/formatting new disks.
         /// </summary>
@@ -469,6 +470,93 @@ namespace PERQdisk.RT11
 
             if (needsRebuilt) Save();
             return;
+        }
+
+        /// <summary>
+        /// Compress the directory.  Removes all the unused blocks, relocates
+        /// the files to close the gaps, then writes just one entry at the end
+        /// of the disk in one contiguous chunk.  Assumes that there are at
+        /// least two unused blocks (otherwise this op is pointless).
+        /// </summary>
+        public void Compress()
+        {
+            // Start at the first unused block
+            var first = FindHole(1);
+            var start = _files[first].StartBlock;
+            var free = 0;
+
+            // Defrag in one pass
+            for (var i = first; i < _files.Count; i++)
+            {
+                // Is this a hole?
+                if (_files[i].Status == StatusWord.Unused)
+                {
+                    // Update the status to Tentative for purging later
+                    var hole = _files[i];
+                    hole.Status = StatusWord.Tentative;
+                    _files[i] = hole;
+
+                    free += hole.Size;
+
+                    Log.Detail(Category.RT11, "Compress: Found hole at index {0}, size {1} @ {2}", i, hole.Size, start);
+                }
+                else if (_files[i].Status == StatusWord.Permanent)
+                {
+                    Log.Detail(Category.RT11, "Compress: Moving file at index {0} to {1}", i, start);
+
+                    // Read in the file...
+                    var entry = _files[i];
+                    entry.Data = ReadFile(entry);       // <facepalm>
+
+                    // Assign the new starting point and save it
+                    entry.StartBlock = start;
+
+                    // Write it back out to move the blocks!
+                    WriteFile(entry);
+                    _files[i] = entry;
+
+                    // Bump the start for the next file
+                    start += entry.Size;
+                }
+                else
+                {
+                    Log.Warn(Category.RT11, "Directory entry {0} has status {1}!", i, _files[i].Status);
+                    // Annnd just continue anyway?  This can't really happen...
+                }
+            }
+
+            // Now run backwards through the list and remove all the Tentative
+            // (deleted) blocks, adjusting _numFiles... _blksFree should be the same!
+            for (var i = _files.Count - 1; i >= 0; i--)
+            {
+                if (_files[i].Status == StatusWord.Tentative)
+                {
+                    Log.Detail(Category.RT11, "Compress: Purging entry {0}", i);
+                    _files.RemoveAt(i);
+                    _numFiles--;
+                }
+            }
+
+#if DEBUG
+            // Sanity checks!
+            if (free != _blksFree)
+            {
+                Console.WriteLine($"** Free count wrong: {free} != {_blksFree}!");
+            }
+
+            if (_numFiles != _files.Count)
+            {
+                Console.WriteLine($"** File count wrong:  {_numFiles} != {_files.Count}!");
+            }
+#endif
+
+            // Finally, create a new unused block and tack it on the end!
+            var freeChunk = new DirectoryEntry((ushort)_blksFree);
+            freeChunk.StartBlock = start;
+            _files.Add(freeChunk);
+            _numFiles++;
+
+            Save();
         }
 
         /// <summary>

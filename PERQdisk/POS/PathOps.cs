@@ -418,7 +418,6 @@ namespace PERQdisk.POS
             }
             else
             {
-                Console.WriteLine($"In the dev:part>xxx case: dirs={_wildDirs.Count} files={_wildFiles.Count}");
                 // In the dev:part>xxx case, we've got either a dir or a file
                 // match so assign one or the other.
                 if (_wildDirs.Count > 0)

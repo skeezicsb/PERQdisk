@@ -100,8 +100,8 @@ namespace PERQdisk.RT11
         {
             if (!_disk.Info.IsWritable)
             {
-                Console.WriteLine("** This floppy is read-only.  Please affix a sticker to the write notch");
-                Console.WriteLine("   and reinsert the diskette in the drive.");
+                Console.WriteLine("** This floppy is read-only.  Please affix a sticker to the");
+                Console.WriteLine("   write notch and reinsert the diskette in the drive.");
                 return false;
             }
 
@@ -193,6 +193,28 @@ namespace PERQdisk.RT11
         {
             _mode = Mode.Text;
             ShowMode();
+        }
+
+        [Command("rt11 details", "Show current flags and modes")]
+        private void ShowSettings()
+        {
+            // Whip up some stats...
+            var blocksInUse = (_disk.MaxLBN - Volume.UserStart) - _volume.Dir.BlocksFree;
+            var filesInUse = _volume.FindFiles("*").Count;
+            var chunksFree = _volume.Dir.Files.Count - filesInUse;
+
+            if (!_disk.Info.IsWritable)
+            {
+                Console.WriteLine("This floppy is write protected!");
+                Console.WriteLine();
+            }
+            Console.WriteLine($"ASK flag is {_ask}.");
+            Console.WriteLine($"CONFIRM flag is {_confirm}.");
+            Console.WriteLine($"Transfer mode is {_mode}.");
+            Console.WriteLine();
+            Console.WriteLine($"Floppy contains {filesInUse} (of {Directory.MaxFiles}) files using {blocksInUse} blocks.");
+            Console.WriteLine($"There are {_volume.Dir.BlocksFree} free blocks in {chunksFree} chunk" +
+                              (chunksFree == 1 ? "." : "s."));
         }
 
         [Command("rt11 verify", "No-op for POS FLOPPY compatibility")]
@@ -583,7 +605,7 @@ namespace PERQdisk.RT11
         {
             if (!WriteCheck()) return;
 
-            Console.WriteLine("Not yet implemented.");
+            _volume.Compress();
         }
 
         /// <summary>

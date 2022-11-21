@@ -106,6 +106,32 @@ CLI improvements to come in subsequent updates.  Additional help, documentation
 and maybe even a nice user's guide to be provided too?
 
 
+2.0  About the Source Code
+--------------------------
+S. Boondoggle 11/20/2022
+
+This Giant Wad of Code bears almost no resemblance to Josh Dersch's original
+2006 version of PERQdisk.  He is blameless in this; anything cringeworthy here
+that offends your programming aesthetic or melts your professional C# coding
+brain is entirely my fault.  This is pretty much a slapped-together port of my
+Perl tools with a C#-ish flavor, kind of.  I can *hear* the purists tense up at
+reading that. :-)  Yeah, I know it ain't pretty, but it works.
+
+Given the basic assumption that this utility won't find much use beyond my own
+needs for building and extracting floppy sets or working through the curation
+process of hundreds of archived disk images, I haven't thought much about
+making the UI more accessible.  Originally the idea of having the Perl tools
+mimic the POS syntax was for my own amusement, plus it enhanced the ability to
+use existing POS floppy command files (which saved a TON of typing).  But I'm
+releasing it in case somebody out there finds this useful or at least mildly
+entertaining.  It does contain quite a bit of interesting and highly esoteric
+PERQ filesystem and RT-11 floppy volume hackery for those who are drawn to such
+intensely nerdy subjects.
+
+If you do find bugs or have questions or want to send feedback, cash, or
+lucrative development offers I'd be delighted to hear from you.
+
+
 Revision History:
 
 v1.0 - ?? : first public release

@@ -62,7 +62,7 @@ namespace PERQdisk.RT11
             // Confirm if overwriting an existing file?
             if (System.IO.File.Exists(dst) && confirm)
             {
-                Console.WriteLine($"** Destination {host} already exists!");
+                Console.WriteLine($"* Destination {host} already exists!");
                 if ((ans = PERQdisk.CLI.Yes("Overwrite [n]? ")) != Doit.Yes) return ans;
             }
 
@@ -379,7 +379,7 @@ namespace PERQdisk.RT11
                 if (ans == Doit.No || ans == Doit.Quit) return;
             }
 
-            Console.Write($"  [Floppy] {src.Filename} => [Floppy] {dstName} ... ");
+            Console.Write($"  [Floppy] {src.Filename} => {dstName} ... ");
 
             var index = FindFileIndex(src.Filename);
             if (index < 0) throw new InvalidOperationException($"Index failure for {src.Filename}");
@@ -399,6 +399,30 @@ namespace PERQdisk.RT11
             // Write it back
             _dir.Files[index] = src;
             _dir.Save();
+
+            Console.WriteLine("Renamed.");
+        }
+
+        /// <summary>
+        /// "Compress" (defragment) the floppy by reorganizing the files to squeeze
+        /// out all the free blocks, moving files around as needed.  The result is
+        /// just one large contiguous chunk of free space at the end.  WAY faster
+        /// than on actual hardware!
+        /// </summary>
+        public void Compress()
+        {
+            // Count up blocks to coalesce; bail if there aren't at least two
+            var chunks = _dir.NumFiles - FindFiles("*").Count;
+
+            if (chunks < 2)
+            {
+                Console.WriteLine("No compression possible.");
+                return;
+            }
+
+            Console.Write("Compressing the floppy's free space ... ");
+
+            _dir.Compress();
 
             Console.WriteLine("Done.");
         }
@@ -434,18 +458,6 @@ namespace PERQdisk.RT11
         }
 
         /// <summary>
-        /// Coalesce free space on the floppy, reorganizing the directory and
-        /// moving files around as needed.  WAY faster than on actual hardware!
-        /// </summary>
-        public void Compress()
-        {
-            Console.WriteLine("Not yet implemented.");
-        }
-
-
-        // todo: these might be consolidated or eliminated since rt11 isn't hierarchical!
-
-        /// <summary>
         /// For RT11, the default output path is <appDir>/Output/<disk>/.  We do
         /// by default organize them in a subdirectory so that files extracted
         /// from each floppy land in their own destination folder.
@@ -464,7 +476,6 @@ namespace PERQdisk.RT11
             // Nope, try to create it (with intermediate dirs as needed)
             try
             {
-                Console.WriteLine($"Creating directory (path) '{dst}'");
                 if (!_dryrun)
                 {
                     var di = System.IO.Directory.CreateDirectory(dst);

@@ -247,7 +247,7 @@ namespace PERQdisk
             byte head = 0;
 
             // Check for wrap, and adjust head
-            if (trk > Geometry.Cylinders)
+            if (trk >= Geometry.Cylinders)
             {
                 trk -= Geometry.Cylinders;
                 head = 1;

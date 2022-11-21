@@ -206,8 +206,7 @@ namespace PERQdisk.RT11
         {
             var match = Paths.MakePattern(pattern);
 
-            return _dir.Files.FindAll(x => (x.Status == StatusWord.Permanent ||
-                                            x.Status == StatusWord.Tentative) &&
+            return _dir.Files.FindAll(x => (x.Status == StatusWord.Permanent) &&
                               Regex.IsMatch(x.Filename, match, RegexOptions.IgnoreCase));
         }
 
