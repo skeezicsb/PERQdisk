@@ -132,7 +132,6 @@ namespace PERQdisk.POS
             _volume.DirTree(dir);
         }
 
-
         [Command("pos type", "Print contents of a file")]
         [Command("pos more")]
         private void TypeFile(string filename)
@@ -146,33 +145,6 @@ namespace PERQdisk.POS
             _volume.DoTypeFile(filename, false);
         }
 
-        /*
-         * copy is complicated.  *ideally* we'd be able to support a very flexible,
-         * dynamic command line with context-sensitive, intelligent tab completion:
-         * 
-         * copy *.pas /switch /switch ~ c:\\users\blah (or even ~/Desktop/blah!!)
-         *      copy from current pos dir to specified output dir
-         * 
-         * copy *>*.pas /switch
-         *      copy from any matching subdir to the current output dir
-         * 
-         * copy sys: ~ /Volume/PERQ/Disks/dump/
-         *      copy the entire tree to a specified output dir
-         * 
-         * and so on.  it would _require_ the use of a separator (POS '~') to give
-         * the parser a chance to shift from '/' as a switch indicator to a (Unix)
-         * host path separator.  this sort of blows up the entire parsing strategy
-         * since it requires baking in a shit-ton more information about the specific
-         * switches and options available to the command _as it is being parsed_ (yet
-         * tops-20 was doing this IN THE 1970s in a handful of assembler/bliss-36).
-         * 
-         * THE POINT IS that since we can't resolve delegates doing reflection, i'll
-         * have to come up with a _way_ more sophisticated way to handle command line
-         * parsing (Parser="string" and do a GetMethodForParser(param.Parser).Invoke()?)
-         * 
-         * BUT FOR NOW just take one bloody file and do the best we can
-         * 
-         */
         [Command("pos copy", "Copy file(s) to the default output directory")]
         private void Copy(string source) // , params string[] args)
         {
@@ -181,12 +153,10 @@ namespace PERQdisk.POS
         }
 
         [Command("pos copy to", "Copy file(s) from the image to the host")]
-        private void CopyTo([PathExpand] string dest, string source) // , params string[] args)
+        private void CopyTo(string dest, string source) // , params string[] args)
         {
-            // todo: args
             _volume.DoCopy(source, dest);
         }
-
 
         [Command("pos compare", "Compare a POS file to a host file")]
         private void Compare(string file, string hostFile)

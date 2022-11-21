@@ -43,6 +43,7 @@ namespace PERQdisk.RT11
 
             _disk = disk;
             _dir = new Directory(this);
+            _dryrun = false;
 
             if (disk.IsLoaded)
             {
@@ -63,6 +64,12 @@ namespace PERQdisk.RT11
         public ushort StartSegment => _startSeg;
 
         public Directory Dir => _dir;
+
+        public bool DryRun
+        {
+            get { return _dryrun; }
+            set { _dryrun = value; }
+        }
 
         //
         // RT11 constants
@@ -218,6 +225,8 @@ namespace PERQdisk.RT11
 
         private RT11Floppy _disk;
         private Directory _dir;
+
+        private bool _dryrun;
 
     }
 }

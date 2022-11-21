@@ -58,6 +58,8 @@ namespace PERQdisk.POS
 
             // Root of the directory tree deferred until partitions initialized
             _root = null;
+
+            _dryrun = false;
         }
 
 
@@ -74,6 +76,11 @@ namespace PERQdisk.POS
             set { _path = value; }
         }
 
+        public bool DryRun
+        {
+            get { return _dryrun; }
+            set { _dryrun = value; }
+        }
 
         /// <summary>
         /// Dumps interesting info from the Volume's DIB to screen.
@@ -230,5 +237,7 @@ namespace PERQdisk.POS
         private List<Partition> _partitions;
         private Directory _root;
         private Directory _path;
+
+        private bool _dryrun;
     }
 }

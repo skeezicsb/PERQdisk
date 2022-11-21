@@ -267,6 +267,29 @@ namespace PERQdisk
             return Path.GetFileName(path);
         }
 
+        public static bool MakeDestPath(string dst, bool dryrun = false)
+        {
+            // Is it already there?
+            if (System.IO.Directory.Exists(dst)) return true;
+
+            // Nope, try to create it (with intermediate dirs as needed)
+            try
+            {
+                Console.WriteLine($"MakeDestPath: {dst} (dryrun {dryrun})");    // DEBUG
+                if (!dryrun)
+                {
+                    var di = System.IO.Directory.CreateDirectory(dst);
+
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"** Could not create '{dst}': {e.Message}");
+                return false;
+            }
+        }
+
         /// <summary>
         /// Turn a filename pattern into a proper Perl-style regex.  Accepts the
         /// wildcards '?' and '*' and quotes certain POS filename characters that

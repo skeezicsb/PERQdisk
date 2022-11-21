@@ -468,27 +468,5 @@ namespace PERQdisk.RT11
             return Paths.BuildOutputPath(System.IO.Path.GetFileNameWithoutExtension(_disk.Filename));
         }
 
-        public bool MakeDestPath(string dst)
-        {
-            // Is it already there?
-            if (System.IO.Directory.Exists(dst)) return true;
-
-            // Nope, try to create it (with intermediate dirs as needed)
-            try
-            {
-                if (!_dryrun)
-                {
-                    var di = System.IO.Directory.CreateDirectory(dst);
-                }
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"** Could not create '{dst}': {e.Message}");
-                return false;
-            }
-        }
-
-        private bool _dryrun = true;
     }
 }

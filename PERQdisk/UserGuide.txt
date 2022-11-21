@@ -354,9 +354,12 @@ with RT-11 floppies the essential commands are:
 
     compress        Coalesce the free space on the floppy.  Essentially
                     "defragments" the floppy, but way, WAY faster than
-                    on the actual 8" drive.  (Not yet implemented)
+                    on the actual 8" drive.
 
     delete          Delete files from the floppy.
+
+    details         Prints the current flag and mode settings, plus some
+                    additional stats.  See also: "show media info".
 
     get             Copy files from the floppy to the host.  See below.
 
@@ -523,4 +526,4 @@ TODO:   Document the save, set, show commands for dealing with media files
 
 
 
-Last modified:  skeezicsb   Sat Nov 19 14:40:17 PST 2022
+Last modified:  skeezicsb   Sun Nov 20 23:30:06 PST 2022

@@ -149,6 +149,7 @@ namespace PERQdisk.RT11
         {
             _ask = false;
             _confirm = false;
+            _volume.DryRun = false;
             Console.WriteLine("FAST mode.");
         }
 
@@ -157,6 +158,7 @@ namespace PERQdisk.RT11
         {
             _ask = true;
             _confirm = true;
+            _volume.DryRun = true;
             Console.WriteLine("SAFE mode.");
         }
 
@@ -211,6 +213,7 @@ namespace PERQdisk.RT11
             Console.WriteLine($"ASK flag is {_ask}.");
             Console.WriteLine($"CONFIRM flag is {_confirm}.");
             Console.WriteLine($"Transfer mode is {_mode}.");
+            Console.WriteLine($"Dry run mode is {_volume.DryRun}.");
             Console.WriteLine();
             Console.WriteLine($"Floppy contains {filesInUse} (of {Directory.MaxFiles}) files using {blocksInUse} blocks.");
             Console.WriteLine($"There are {_volume.Dir.BlocksFree} free blocks in {chunksFree} chunk" +
@@ -243,23 +246,6 @@ namespace PERQdisk.RT11
         /// <summary>
         /// Prints the directory in PERQ "FLOPPY" program format.
         /// </summary>
-        /// <remarks>
-        /// Eventually provide all that the floppy.pl implementation offers:
-        /// 
-        /// Usage:      DIRECTORY [/switches] [filepat] [outfile]
-        /// 
-        /// Arguments:
-        ///     <none>      Print a long directory listing of all files to the screen
-        /// 	filepat     (optional) List only files matching this pattern
-        ///     outfile     (optional) Write the output to "outfile"
-        /// 
-        /// Switches:
-        ///     LONG        List all file information [Default]
-        ///     SHORT       Only list file names
-        ///     HELP        Print this message
-        ///
-        /// For now, LONG format with no switches or options.
-        /// </remarks>
         [Command("rt11 directory", "List contents of the directory")]
         private void PrintDirectory()
         {
@@ -290,10 +276,10 @@ namespace PERQdisk.RT11
             Console.WriteLine($"\t{nFiles} File" + (nFiles != 1 ? "s" : "") + " in Use");
             Console.WriteLine($"\t{nFree} Free Block" + (nFree != 1 ? "s" : ""));
             Console.WriteLine();
-
-            // debug
+#if DEBUG
             if (nFree != _volume.Dir.BlocksFree)
                 Console.WriteLine($"** ERROR: free block count wrong, vol={_volume.Dir.BlocksFree}");
+#endif
         }
 
         [Command("rt11 type", "Print contents of floppy file(s)")]
@@ -325,7 +311,7 @@ namespace PERQdisk.RT11
 
             if (found.Count == 0)
             {
-                Console.WriteLine($"No files matching '{filePat}' found on the floppy.");
+                Console.WriteLine($"** No files matching '{filePat}' found on the floppy.");
                 return;
             }
 
@@ -390,13 +376,13 @@ namespace PERQdisk.RT11
 
                     if (_confirm)
                     {
-                        Console.WriteLine($"* Destination directory {hostDir} does not exist.");
+                        Console.WriteLine($"* Destination directory {Paths.Canonicalize(hostDir)} does not exist.");
                         var ans = PERQdisk.CLI.Yes("Create it [y]? ", true);
                         if (ans == Doit.No || ans == Doit.Quit) return;
-
-                        // If fails we bail
-                        if (!_volume.MakeDestPath(hostDir)) return;
                     }
+
+                    // Make the dir path; if it fails we bail
+                    if (!Paths.MakeDestPath(hostDir, _volume.DryRun)) return;
                 }
 
                 // Okay, got a destination directory, start copying files
@@ -492,7 +478,7 @@ namespace PERQdisk.RT11
 
                 if (count == 0)
                 {
-                    Console.WriteLine($"No files matching '{hostPat}' found.");
+                    Console.WriteLine($"** No files matching '{hostPat}' found.");
                 }
             }
             else
@@ -563,7 +549,7 @@ namespace PERQdisk.RT11
 
                 if (found.Count == 0)
                 {
-                    Console.WriteLine($"No files matching '{filePat}' found on the floppy.");
+                    Console.WriteLine($"** No files matching '{filePat}' found on the floppy.");
                     return;
                 }
 

@@ -43,7 +43,7 @@ namespace PERQdisk.POS
 
             if (!items.IsValid)
             {
-                Console.WriteLine($"No matching files matching {pattern}.");
+                Console.WriteLine($"** No matching files matching '{pattern}'.");
                 return;
             }
 
@@ -135,7 +135,6 @@ namespace PERQdisk.POS
                 }
             }
         }
-
 
         private File PartToDirFile(Partition p)
         {
@@ -243,7 +242,7 @@ namespace PERQdisk.POS
 
             if (found.Files.Count == 0)
             {
-                Console.WriteLine($"No files matching '{filePat}' found.");
+                Console.WriteLine($"** No files matching '{filePat}' found.");
                 return;
             }
 
@@ -271,7 +270,7 @@ namespace PERQdisk.POS
         {
             // Device
             Console.WriteLine($"\nDisk image:   {_disk.Filename}");
-            Console.WriteLine($"\nDescription:  {_disk.Info.Description}");
+            Console.WriteLine($"Description:  {_disk.Info.Description}");
 
             // Volume
             Console.WriteLine("\nDevice name:");
@@ -364,7 +363,7 @@ namespace PERQdisk.POS
 
             if (dir == null)
             {
-                Console.WriteLine($"Can't start tree at {start}: bad directory.");
+                Console.WriteLine($"** Can't start tree at {start}: bad directory.");
                 return;
             }
 
@@ -572,28 +571,5 @@ namespace PERQdisk.POS
             return hostPath;
         }
 
-        private bool MakeDestPath(string dst)
-        {
-            // Is it already there?
-            if (System.IO.Directory.Exists(dst)) return true;
-
-            // Nope, try to create it (with intermediate dirs as needed)
-            try
-            {
-                Console.WriteLine($"Creating directory (path) '{dst}'");
-                if (!_dryrun)
-                {
-                    var di = System.IO.Directory.CreateDirectory(dst);
-                }
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Could not create '{dst}': {e.Message}");
-                return false;
-            }
-        }
-
-        private bool _dryrun = true;
     }
 }
