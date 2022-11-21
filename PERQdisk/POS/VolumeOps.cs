@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 
+using PERQemu;
 using PERQmedia;
 
 namespace PERQdisk.POS
@@ -496,7 +497,8 @@ namespace PERQdisk.POS
         /// </summary> 
         private void CopyRecursive(Directory srcDir, string destDir)
         {
-            Console.WriteLine($"Starting recursive copy of '{srcDir.Name}' to '{destDir}'");
+            Log.Debug(Category.POS, "Starting recursive copy of '{0}' to '{1}'",
+                                     srcDir.Name, Paths.Canonicalize(destDir));
 
             // If there are children, do them first
             foreach (var d in srcDir.Children)
@@ -514,37 +516,47 @@ namespace PERQdisk.POS
         private void CopyOne(File srcFile, string destDir)
         {
             // Skip directories; we only do files!
-            if (srcFile.IsDirectory)
-            {
-                Console.WriteLine($"Skipping directory {srcFile.FullName} in CopyOne");
-                return;
-            }
+            if (srcFile.IsDirectory) return;
 
-            var newFile = System.IO.Path.Combine(destDir, CreateOutputPath(srcFile));
+            var newPath = System.IO.Path.Combine(destDir, CreateOutputPath(srcFile));
+
+            // Make sure the output directory exists on the host
+            var dirPath = System.IO.Path.GetDirectoryName(newPath);
+
+            if (!System.IO.Directory.Exists(dirPath))
+            {
+                // Try to create it, but bail if it fails
+                if (!Paths.MakeDestPath(dirPath, _dryrun)) return;
+            }
 
             // Attempt to create the file; catch and report exceptions in case
             // the host can't handle something funky in the POS filename
             try
             {
+                Console.Write($"  Copying {srcFile.SimpleName} => ");
+
+                var outPath = Paths.Canonicalize(newPath);  // Once
+                if ((Console.CursorLeft + outPath.Length + 18) > Console.BufferWidth)
+                    Console.Write("\n          ");          // Aesthetics hack
+                Console.Write($"{outPath} ... ");
+
                 if (_dryrun)
                 {
-                    Console.WriteLine("(dry run) Copying '{0}' => '{1}'",
-                                      srcFile.SimpleName,
-                                      Paths.Canonicalize(newFile));
+                    Console.WriteLine("(dryrun)");
                     return;
                 }
 
                 // Do it for realsies
-                var fs = new System.IO.FileStream(newFile, System.IO.FileMode.Create);
+                var fs = new System.IO.FileStream(newPath, System.IO.FileMode.Create);
 
                 fs.Write(srcFile.Data, 0, srcFile.Data.Length);
                 fs.Close();
 
-                Console.WriteLine($"Copied '{srcFile.FullName}' => '{newFile}'");
+                Console.WriteLine("Done ({0:n1}KB)", srcFile.Data.Length / 1024.0);
             }
             catch (Exception e)
             {
-                Console.WriteLine($"** Failed to create '{newFile}': {e.Message}");
+                Console.WriteLine($"** Failed to create '{newPath}': {e.Message}");
                 // Skip and continue
             }
         }
@@ -552,10 +564,10 @@ namespace PERQdisk.POS
         /// <summary>
         /// Creates the output path for a given file relative to the "standard"
         /// disk naming scheme so that the desired (or default) output directory
-        /// can be prepended.  Format is <DiskName>/<Dev>/<Path> where DiskName
-        /// is the original image file read (without its extension!?), Dev is
-        /// the volume name, and <Path> is the full POS path from the Partition
-        /// on down.  Returns a path using the current host syntax.
+        /// can be prepended.  Format is DiskName/Dev/Path, where DiskName is the
+        /// original image file read (without its extension), Dev is the volume
+        /// name, and Path is the full POS path from the Partition on down.
+        /// Returns a path using the current host syntax.
         /// </summary>
         public string CreateOutputPath(File sourceFile)
         {
@@ -564,10 +576,14 @@ namespace PERQdisk.POS
             var parts = fullPath.Split(':', '>');
             fullPath = System.IO.Path.Combine(parts);
 
+            // This oughtta be a flag/switch, but for now just force it...
+            if (PERQdisk.HostIsUnix) fullPath = fullPath.ToLower();
+
             // Get and prepend the media file's basename
             var hostPath = System.IO.Path.GetFileNameWithoutExtension(_disk.Filename);
             hostPath = System.IO.Path.Combine(hostPath, fullPath);
 
+            Log.Detail(Category.POS, "CreateOutPath {0} => {1}", sourceFile.SimpleName, hostPath);
             return hostPath;
         }
 

@@ -267,19 +267,21 @@ namespace PERQdisk
             return Path.GetFileName(path);
         }
 
+        /// <summary>
+        /// Create a directory path if it doesn't already exist.  In dryrun mode,
+        /// always returns true, otherwise prints error and returns false.
+        /// </summary>
         public static bool MakeDestPath(string dst, bool dryrun = false)
         {
             // Is it already there?
-            if (System.IO.Directory.Exists(dst)) return true;
+            if (Directory.Exists(dst)) return true;
 
             // Nope, try to create it (with intermediate dirs as needed)
             try
             {
-                Console.WriteLine($"MakeDestPath: {dst} (dryrun {dryrun})");    // DEBUG
                 if (!dryrun)
                 {
-                    var di = System.IO.Directory.CreateDirectory(dst);
-
+                    Directory.CreateDirectory(dst);
                 }
                 return true;
             }

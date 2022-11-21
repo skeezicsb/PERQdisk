@@ -140,7 +140,7 @@ namespace PERQdisk.RT11
                     fs.Write(buf, 0, buf.Length);
                     fs.Close();
 
-                    Console.WriteLine("Done ({0:n1}KB).", buf.Length / 1024);
+                    Console.WriteLine("Done ({0:n1}KB)", buf.Length / 1024.0);
                 }
 
                 // todo: if confirm, check before overwriting?
@@ -295,7 +295,7 @@ namespace PERQdisk.RT11
             // Success!
             if (status == 0)
             {
-                Console.WriteLine($"Done ({blocks} blocks).");
+                Console.WriteLine($"Done ({blocks} blocks)");
                 return Doit.Yes;
             }
 
@@ -351,7 +351,7 @@ namespace PERQdisk.RT11
 
             _dir.DeleteFile(file);
 
-            Console.WriteLine("Deleted.");
+            Console.WriteLine("Deleted");
             return Doit.Yes;
         }
 
@@ -400,7 +400,7 @@ namespace PERQdisk.RT11
             _dir.Files[index] = src;
             _dir.Save();
 
-            Console.WriteLine("Renamed.");
+            Console.WriteLine("Renamed");
         }
 
         /// <summary>
@@ -416,7 +416,7 @@ namespace PERQdisk.RT11
 
             if (chunks < 2)
             {
-                Console.WriteLine("No compression possible.");
+                Console.WriteLine("** No compression possible.");
                 return;
             }
 
