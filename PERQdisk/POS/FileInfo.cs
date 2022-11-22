@@ -120,9 +120,9 @@ namespace PERQdisk.POS
             _fileSize = fibSector.ReadWord(0);
 
             var tmp = fibSector.ReadWord(2);
-            _fileBits = (ushort)(tmp & 0x0fff);     // Bits in last block
-            _isSparse = (tmp & 0x1000) != 0;        // True if sparsely allocated
-            _isOpen = (tmp & 0xe000) != 0;          // File status: not used in POS!?
+            _fileBits = (ushort)(tmp & 0x1fff);     // Bits in last block
+            _isSparse = (tmp & 0x2000) != 0;        // True if sparsely allocated
+            _isOpen = (tmp & 0xc000) != 0;          // File status: not used in POS!?
 
             _creationDate = new TimeStamp(fibSector.ReadDWord(4));
             _lastWriteDate = new TimeStamp(fibSector.ReadDWord(8));
