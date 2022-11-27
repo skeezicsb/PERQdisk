@@ -260,6 +260,29 @@ namespace PERQdisk
         }
 
         /// <summary>
+        /// Strip away any illegal characters from an output path.  This cleans
+        /// up pathnames that POS allows but Windows (or Unix) balks at.
+        /// </summary>
+        /// <remarks>
+        /// Rather than strip or replaced with a fixed value, replace with the
+        /// hex code for the char.  This should help avoid creating naming
+        /// collisions that would result in overwritten/skipped files (as in the
+        /// case of boot>helpdir>?.help and *.help both being written as _.help
+        /// or just .help).  There aren't too many instances of this, usually.
+        /// </remarks>
+        public static string Sanitize(string path)
+        {
+            var clean = path;
+
+            foreach (var c in Path.GetInvalidFileNameChars())
+            {
+                clean = clean.Replace(c.ToString(), $"0x{(byte)c}");
+            }
+
+            return clean;
+        }
+        
+        /// <summary>
         /// Return just the filename portion of a path.
         /// </summary>
         public static string Basename(string path)

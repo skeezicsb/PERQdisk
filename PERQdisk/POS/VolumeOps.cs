@@ -518,6 +518,7 @@ namespace PERQdisk.POS
             // Skip directories; we only do files!
             if (srcFile.IsDirectory) return;
 
+            // Generate a host path from the POS path
             var newPath = System.IO.Path.Combine(destDir, CreateOutputPath(srcFile));
 
             // Make sure the output directory exists on the host
@@ -567,12 +568,13 @@ namespace PERQdisk.POS
         /// can be prepended.  Format is DiskName/Dev/Path, where DiskName is the
         /// original image file read (without its extension), Dev is the volume
         /// name, and Path is the full POS path from the Partition on down.
-        /// Returns a path using the current host syntax.
+        /// Returns a path using the current host syntax, with any illegal path
+        /// characters remapped.
         /// </summary>
         public string CreateOutputPath(File sourceFile)
         {
             // Qualify and split the POS path into chunks, then assemble as host path
-            var fullPath = sourceFile.Parent.Path + ">" + sourceFile.SimpleName;
+            var fullPath = sourceFile.Parent.Path + ">" + Paths.Sanitize(sourceFile.SimpleName);
             var parts = fullPath.Split(':', '>');
             fullPath = System.IO.Path.Combine(parts);
 
