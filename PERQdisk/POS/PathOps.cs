@@ -75,9 +75,13 @@ namespace PERQdisk.POS
             if (dir.IsPartPath && dir.Partitions.Count == 1)
                 return dir.Partitions[0].Root;
 
-            // Just ONE directory, please
-            if (dir.IsDirPath && dir.Directories.Count == 1)
-                return dir.Directories[0];
+            // It's a directory!
+            if (dir.IsDirPath)
+            {
+                // A wildcard that resolves to exactly one directory is OK too
+                if (!dir.IsDirWild || (dir.IsDirWild && dir.Directories.Count == 1))
+                    return dir.Directories[0];
+            }
 
             // Everything else is a nope
             return null;
@@ -185,8 +189,23 @@ namespace PERQdisk.POS
             Console.WriteLine($"Breakdown of path '{_original}':");
             Console.WriteLine($"  Device:     {DevPart} \tIsDevPath={IsDevPath}");
             Console.WriteLine($"  Partition:  {PartPart}\tIsPartPath={IsPartPath}  Wild={IsPartWild}  Count={_wildParts.Count}");
+            if (_wildParts.Count > 0)
+            {
+                foreach (var p in _wildParts) { Console.WriteLine($"    Matched {p.Name}"); }
+            }
+
             Console.WriteLine($"  Directory:  {DirPart} \tIsDirPath={IsDirPath}  Wild={IsDirWild}  Count={_wildDirs.Count}");
+            if (_wildDirs.Count > 0)
+            {
+                foreach (var d in _wildDirs) { Console.WriteLine($"    Matched {d.Name} ({d.DirFile.FullName})"); }
+            }
+
             Console.WriteLine($"  File part:  {FilePart}\tIsFilePath={IsFilePath}  Wild={IsFileWild}  Count={_wildFiles.Count}");
+            if (_wildFiles.Count > 0)
+            {
+                foreach (var f in _wildFiles) { Console.WriteLine($"    Matched {f.SimpleName} ({f.FullName})"); }
+            }
+
             Console.WriteLine($"  Unresolved: '{_resolved}'");
         }
 
@@ -359,7 +378,6 @@ namespace PERQdisk.POS
             return string.IsNullOrEmpty(_resolved);
         }
 
-
         /// <summary>
         /// If a directory spec is given (name or wildcard), chase down all of
         /// the matches and build one (flattened) list.  Allows for wildcards
@@ -399,37 +417,45 @@ namespace PERQdisk.POS
             // or file, but if nothing came back then bail out - either the name
             // didn't resolve or the wildcard didn't match anything
             //
-
             if (_wildParts.Count == 0)
             {
                 _partPart = string.Empty;               // No matches, bad path!
+                return;
             }
 
-            // In the form dev:part>dir>xxx we should always resolve to at least
-            // one valid directory and one or more files (or subdirectories)
-            if (levels.Length > 1)
+            if (_wildParts.Count == 1)
             {
-                _dirPart = string.Join(">", levels, 0, levels.Length - 1);
+                _partPart = _wildParts[0].Name;         // Resolve it
+            }
 
-                if (_wildFiles.Count > 0)
-                {
-                    _filePart = levels[levels.Length - 1];  // Save the wildcard
-                }
+            //
+            // POS can store files at the partition level, so it's possible we
+            // can end up with no matching directories but have files!  If BOTH
+            // are zero then we really didn't match anything, and that's a fail.
+            //
+            if (_wildDirs.Count == 0 && _wildFiles.Count == 0)
+            {
+                return;
+            }
+
+            _isValid = true;
+            _resolved = string.Empty;
+
+            if (_wildDirs.Count == 1)
+            {
+                // Resolve to exactly one matching dir.  Sigh.
+                _dirPart = _wildDirs[0].DirFile.FullName.Replace(".DR", "");
             }
             else
             {
-                // In the dev:part>xxx case, we've got either a dir or a file
-                // match so assign one or the other.
-                if (_wildDirs.Count > 0)
-                {
-                    _dirPart = levels[0];           // Leaf was a dir match
-                }
-
-                if (_wildFiles.Count > 0)
-                {
-                    _filePart = levels[0];          // Leaf was a file match
-                }
+                // Reassemble the directory portion of the original pattern
+                _dirPart = string.Join(">", levels, 0, levels.Length - 1);
             }
+
+            if (_wildFiles.Count == 0) return;
+
+            // Save the wildcard pattern (leaf element)
+            _filePart = levels[levels.Length - 1];
         }
 
         /// <summary>
@@ -457,16 +483,19 @@ namespace PERQdisk.POS
                 }
                 else
                 {
-                    // Match as a directory (first) OR as a plain file.
-                    // NB: order matters here, which is inexcusably bad but is
-                    // necessary due to the terrible "trim .DR off of directory
-                    // file names hack" when building the tree.  Ugh.
+                    // Special case: match as a directory (first) before checking
+                    // to see if it's a plain file.  Order matters here, which is
+                    // inexcusably bad but is necessary due to the terrible "trim
+                    // .DR off directory file names hack" when building the tree.
+                    // Ugh.
                     if (dir.ContainsDir(fileStr))
                     {
                         _wildDirs.Add(dir.FindDirectory(fileStr));
                         count++;
+                        return count;
                     }
-                    else if (dir.ContainsFile(fileStr))
+
+                    if (dir.ContainsFile(fileStr))
                     {
                         _wildFiles.Add(dir.FindFile(fileStr));
                         count++;
@@ -475,8 +504,8 @@ namespace PERQdisk.POS
 
                 if (count > 0)
                 {
-                    _resolved = string.Empty;
-                    _isValid = true;
+                    // Save our parent dir since it contains a match!
+                    _wildDirs.Add(dir);
                 }
 
                 return count;
@@ -485,12 +514,7 @@ namespace PERQdisk.POS
             // Haven't reached the edge, continue the search
             foreach (var d in dir.FindDirectories(path[level]))
             {
-                // Descend and only add this dir if the child matches something!
-                if (DoOneLevel(d, path, level + 1) > 0)
-                {
-                    _wildDirs.Add(d);
-                    count++;
-                }
+                count += DoOneLevel(d, path, level + 1);
             }
 
             return count;

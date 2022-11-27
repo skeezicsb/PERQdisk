@@ -280,7 +280,17 @@ And loading another disk (from, say, the archive "g7.prqm") would produce:
 With a library of hundreds of disk images to catalog, the aim is to facilitate
 the transfer of thousands of files without fuss.  The implementation may change
 if it's confusing or unwieldy in practice!
-    
+
+
+    * NOTE *
+
+    In v0.9 the COPY command doesn't have too many guard rails; it'll
+    just copy what you tell it to without prompts and without protection
+    against overwriting existing files.  It's really useful for quickly 
+    extracting lots of files, so I'm releasing it without some of the UI
+    refinements that future switch parsing will enable (to add more fine-
+    grained control/safety over which files get copied).
+
 
 Unlike the FLOPPY program, there aren't any global "ASK", "VERIFY" or "CONFIRM"
 flags that can be set by separate commands; in POS, COPY has switches that let
@@ -526,4 +536,4 @@ TODO:   Document the save, set, show commands for dealing with media files
 
 
 
-Last modified:  skeezicsb   Sun Nov 20 23:30:06 PST 2022
+Last modified:  skeezicsb   Tue Nov 22 10:05:42 PST 2022

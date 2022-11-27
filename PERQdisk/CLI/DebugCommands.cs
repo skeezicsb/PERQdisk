@@ -36,7 +36,7 @@ namespace PERQdisk
     /// </summary>
     public class DebugCommands
     {
-
+        [Conditional("DEBUG")]
         [Command("debug crc speed test", "Check CRC speed [requires 'file'.short]")]
         public void CRCSpeedCheck(string file)
         {

@@ -533,11 +533,11 @@ namespace PERQdisk.POS
             // the host can't handle something funky in the POS filename
             try
             {
-                Console.Write($"  Copying {srcFile.SimpleName} => ");
+                Console.Write($"  Copy {srcFile.SimpleName} => ");
 
                 var outPath = Paths.Canonicalize(newPath);  // Once
                 if ((Console.CursorLeft + outPath.Length + 18) > Console.BufferWidth)
-                    Console.Write("\n          ");          // Aesthetics hack
+                    Console.Write("\n       ");             // Aesthetics hack
                 Console.Write($"{outPath} ... ");
 
                 if (_dryrun)
