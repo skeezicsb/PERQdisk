@@ -118,24 +118,22 @@ Perl tools with a C#-ish flavor, kind of.  I can *hear* the purists tense up at
 reading that. :-)  Yeah, I know it ain't pretty, but it works.
 
 Given the basic assumption that this utility won't find much use beyond my own
-needs for building and extracting floppy sets or working through the curation
-process of hundreds of archived disk images, I haven't thought much about
-making the UI more accessible.  Originally the idea of having the Perl tools
-mimic the POS syntax was for my own amusement, plus it enhanced the ability to
-use existing POS floppy command files (which saved a TON of typing).  But I'm
-releasing it in case somebody out there finds this useful or at least mildly
-entertaining.  It does contain quite a bit of interesting and highly esoteric
-PERQ filesystem and RT-11 floppy volume hackery for those who are drawn to such
-intensely nerdy subjects.
+needs for building and extracting floppy sets or curating hundreds of archived
+disk images, I haven't thought much about making the UI more accessible.  The
+idea of making the Perl tools mimic the POS syntax was for my own amusement,
+plus it enhanced the ability to use existing POS floppy command files (which
+saved a TON of typing).  But I'm releasing it in case somebody out there finds
+this useful or at least mildly entertaining.  It does contain quite a bit of
+interesting and highly esoteric PERQ filesystem and RT-11 floppy volume hackery
+for those who are drawn to such intensely nerdy subjects.
 
-If you do find bugs or have questions or want to send feedback, cash, or
-lucrative development offers I'd be delighted to hear from you.
+If you find bugs, have questions or want to send feedback, cash, or lucrative
+development offers I'd be delighted to hear from you.
 
 
 Revision History:
 
-v1.0 - ?? : first public release
-v0.9 - 11/11/2022 : rewrite to incorporate tons of new functionality
+v0.9 - 11/27/2022 : rewrite to incorporate tons of new functionality
 v0.2 - 1/18/2022 : updated to use PERQmedia for all file loading!
 v0.1 - 12/20/2009 : updated for new hard disk image format
 v0.0 - 8/19/2006 : original release

@@ -181,7 +181,6 @@ namespace PERQdisk.POS
         private void PrintInfo(string file)
         {
             var path = _volume.Resolve(file);
-            path.Dump();
 
             if (!path.IsValid)
             {

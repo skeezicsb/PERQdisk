@@ -264,11 +264,12 @@ namespace PERQdisk
         /// up pathnames that POS allows but Windows (or Unix) balks at.
         /// </summary>
         /// <remarks>
-        /// Rather than strip or replaced with a fixed value, replace with the
-        /// hex code for the char.  This should help avoid creating naming
-        /// collisions that would result in overwritten/skipped files (as in the
-        /// case of boot>helpdir>?.help and *.help both being written as _.help
-        /// or just .help).  There aren't too many instances of this, usually.
+        /// Rather than strip or map illegal characters to a fixed value, replace
+        /// them with their hex code.  This makes them stand out and should help
+        /// avoid creating naming collisions that would result in overwritten or
+        /// skipped files (as in the case of boot>helpdir>?.help and *.help both
+        /// being written as _.help or just .help).  There aren't many instances
+        /// of this, usually.
         /// </remarks>
         public static string Sanitize(string path)
         {
