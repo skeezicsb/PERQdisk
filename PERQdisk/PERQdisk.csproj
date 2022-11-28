@@ -82,14 +82,20 @@
     <Compile Include="POS\Scavenger.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ReadMe.txt" />
+    <Content Include="ReadMe.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.txt" />
     <None Include="PNX\Readme.txt" />
     <None Include="NOTES.txt" />
-    <None Include="UserGuide.txt" />
-    <None Include="COPYING.txt" />
+    <None Include="UserGuide.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="COPYING.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="RT11\" />

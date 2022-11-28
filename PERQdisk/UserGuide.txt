@@ -104,15 +104,17 @@ this.  While POS filesystems are read-only, updating the media file's header
 (flags or text label, currently) sets the "modified" status.  RT-11 floppies
 flag any changes to the header or contents, naturally.
 
+
     ** IMPORTANT **
 
-    As with PERQemu you must manually issue a "save", "save as" or "save with"
-    command to save your changes permanently; otherwise they are lost when
-    PERQdisk exits.  Like PERQemu, "save" updates the file in-place, using
-    the same name and format as the original; "save as" lets you give the
-    image file a new name, while "save with" lets you specify a new name and
-    archive format.  The PERQemu User's Guide explains the PERQmedia formats
+    As with PERQemu you must manually issue a "save", "save as" or "save
+    with" command to save your changes permanently; otherwise they are lost
+    when PERQdisk exits.  Like PERQemu, "save" updates the file in-place,
+    using the same name and format as the original; "save with" lets you
+    specify a new archive format, while "save as" lets you specify a new
+    name and format.  The PERQemu User's Guide explains PERQmedia formats
     in more detail.
+
 
 To unload a disk and return to the top-level prompt, the "unload" (or "done")
 command unmounts the current volume and any un-saved changes are lost.  At any
@@ -153,8 +155,23 @@ what input the program expects next.
     quit        Exit PERQdisk.  Y'know, to go run PERQemu!
 
 
-TODO:   define wildcards and how they're resolved for both local filenames
-        and within POS or RT11 volumes!
+1.3.1  Wildcards
+----------------
+
+PERQdisk lets you specify wildcards in almost any place where a PERQ file or
+path name parameter is expected.  This applies only to POS or RT-11 filenames,
+currently; commands which operate on the local filesystem ("cd", "ls", etc.) do
+not do wildcard expansion.
+
+Two wildcard characters are recognized:
+
+    ?   Matches 0 or 1 characters
+    *   Matches 0 or more characters
+
+These are interpreted by the Mono/C# Regex engine, so they're fairly Perl/Unix-
+like in that they generally match as you'd expect them to.  Commands which only
+accept a single file or directory specification will balk if you supply a wild-
+card that can't be resolved to a single match.
 
 
 1.4  POS Commands
@@ -200,9 +217,7 @@ to be removed in the release version, the basic functions are as follows:
 
     path        Show the current directory in the POS filesystem.  With an
                 argument, change to that directory.  (The current POS path
-                is also shown in the prompt.)  Like modern OSes, POS uses
-                "." to mean the current directory, and ".." to go up a level
-                in the hierarchy.
+                is also shown in the prompt.)
 
     pause       Print a message on the screen and wait for the user to press
                 RETURN.  (This is for compatibility with POS command files.)
@@ -214,11 +229,39 @@ to be removed in the release version, the basic functions are as follows:
 The "set", "save" and "show" prefixes are common to RT-11 disks as well; they
 are discussed below.
 
-TODO:       POS pathname syntax might need a bit of clarification, or at
-            least a referral to the PERQemu user's guide
+
+1.4.1  POS Pathnames
+--------------------
+
+POS path names are a quaint throwback to the 1970s, similar in structure to many
+popular operating systems of the time before Unix.  It will remind modern users
+of the DOS style that still lurks underneath Windows systems today.  The general
+form is:
+
+    dev:partition>[dir>]file.ext
+
+That is, a device name is the "root" of the filesystem.  At least one partition
+is required, which forms the first tier which can contain files.  Subdirectories
+are optional; up to 10 levels are allowed in POS.  Finally, a file name is up to
+25 characters, including (by convention) its extension.
+
+The ":" character that specifies the device is required; like "C:" in DOS, that
+character may not appear anywhere else in the path or file name.  In POS, you
+can't actually "cd" to the device, but in PERQdisk it's allowed (it behaves like
+a regular directory, mostly).  You can specify a path starting with ":part>" and
+PERQdisk will fill in the device name automatically.
+
+The ">" character separates directories, including the leading partition (which
+is essentially a directory).  In POS, a directory is a file that ends with the
+extension ".DR"; like POS, PERQdisk displays this as a ">" in output.  Pathnames
+can also use the "." and ".." syntax to refer to the current and previous level
+of the hierarchy as most current OSes do.
+
+For more informtion about POS, please refer to the PERQemu User's Guide (with
+links to POS documentation).
 
 
-1.4.1  POS COPY Command
+1.4.2  POS COPY Command
 -----------------------
 
 Besides using TYPE to view files on the screen, the COPY command is the most
@@ -419,19 +462,31 @@ in PERQdisk:
     duplicate   fsfloppy    floppyget   floppyput
 
 
-1.5.1  Floppy Transfers
+1.5.1  RT-11 Filenames
+----------------------
+
+RT-11 volumes contain only a single directory, so there are no subdirectories
+and no "navigation" commands.  A file name is at most six characters with an
+(optional) three character extension; the "." is implicit and not stored in the
+directory.  The RADIX-50 encoding restricts filenames to only alphanumeric ASCII
+characters, plus '$'.  PERQdisk automatically matches case for lookup or saving
+of filenames so you don't have to type with CAPS LOCK on. :-)
+
+Wildcards may be used where appropriate, using the POS rules for matching.
+
+
+1.5.2  Floppy Transfers
 -----------------------
 
 The floppy GET and PUT commands are enhanced versions of the POS FLOPPY program
 in that they allow the use of wildcards.  Similar rules to the POS filesystem
 COPY command apply; the "<cmd> source [destination]" style syntax is used, but
-the meanings are reversed depending on the direction of the transfer.  Note that
-due to the severe restrictions on file naming imposed by RT-11 and its use of
-the limited "Radix 50" character set, PERQdisk tries to provide the same sort of
-"intuitive" parsing as the POS FLOPPY program.  In general this means that file
-names are automatically generated when copying from the host (PUT), while long
-source filenames can be used when copying to the host (GET) as long as the name
-resolves unambiguously to a single floppy file.  For example:
+the meanings are reversed depending on the direction of the transfer.  PERQdisk
+tries to provide the same sort of "intuitive" parsing as the POS FLOPPY program.
+In general this means that file names are automatically generated when copying
+from the host (PUT), while long source filenames can be used when copying to the
+host (GET) as long as the name resolves unambiguously to a single floppy file.
+For example:
 
     put longfilename.text
         => copied to the floppy as LONGFI.TEX
@@ -461,19 +516,7 @@ to short names and back again; commonly a "put.cmd" and "get.cmd" are included
 on the floppy for this purpose.
 
 
-TODO:   the "directory" command is used in POS to produce listings to a text
-        file that facilitates the creation of these command files; it would
-        be nice to add that to PERQdisk!
-
-TODO:   test and document the behavior of "@" syntax; POS requires that any
-        command file run lives on the hard disk (so "get get.cmd; @get") but
-        does PERQdisk have this restriction?  Can we "@get" directly from
-        the floppy!?  (What if the file exists in both places, hmm?)
-
-TODO:   maybe document the naming restrictions of the RAD50 character set
-
-
-1.5.2  Line Endings
+1.5.3  Line Endings
 -------------------
 
 On Unix hosts, PERQdisk attempts to automatically identify text files and convert
@@ -503,7 +546,7 @@ just typing it _as_ a command, or as the parameter to the "mode" command.  With
 no argument "mode" prints the mode currently in effect.
 
 
-1.5.3  Safe vs. Fast
+1.5.4  Safe vs. Fast
 --------------------
 
 Mostly for compatibility, but useful when doing bulk transfers, PERQdisk offers
@@ -539,9 +582,85 @@ default when PERQdisk starts up is "safe."
 1.6  Common Media Commands
 --------------------------
 
-TODO:   Document the save, set, show commands for dealing with media files
-        and some of the nicer PRQM format features.
+Both the POS and RT-11 subsystems share some common commands for manipulating
+the media files regardless of what volume type they contain.  These are:
+
+    save        Save the current file "in place", using the same name
+                and format it was opened with.
+
+    save with   Save the file in a new format, appropriate for the type
+                of media loaded (floppy or hard disk).  PERQdisk changes
+                the extension but uses the same file name.
+
+    save as     Save the file with a new name, and optionally with a
+                different format.  This lets you create a copy without
+                touching the original.
 
 
+The "show" prefix introduces commands to display information about the loaded
+file:
 
-Last modified:  skeezicsb   Sun Nov 27 18:43:23 PST 2022
+    show media info     Display a comprehensive breakdown of the
+                        current archive, the geometry and type of
+                        the disk image it contains, and any flags,
+                        labels or other metadata contained therein.
+
+    show text label     Show the current text label, if the format
+                        in use supports one (IMD or PRQM).
+
+    show image label    Show the current graphical label if the
+                        archive contains one (PRQM format only).
+                        [Not yet implemented]
+
+At the top-level prompt, the "show media info" command takes a filename argument
+and displays the metadata for that file; when a media file is already loaded,
+"show media info" shows the current file.
+
+
+The "set" prefix is for commands to change the current file's flags or labels:
+
+    set archive user    Change the string that identifies who
+                        created the archive, typically a user
+                        name or email address (PRQM format).
+                        Remember to surround this in "" if the
+                        string entered contains spaces.
+
+    set filesystem type Change the "hint byte" that identifies
+                        the type of volume or filesystem contained
+                        in the archive (PRQM or PFD formats).
+                        PERQdisk will automatically set or correct
+                        this when it can.
+
+    set removable       Change the "removable" flag.  This tells
+                        PERQemu that the enclosed archive is a
+                        removable type, such as a floppy, tape or
+                        hard disk "pack" with removable platters.
+                        PERQdisk sets this automatically for all
+                        floppy media; no other removable types
+                        are yet supported by the emulator.
+                        (PRQM format only.)
+
+    set text label      Change the text label.  Invokes an
+                        external text editor to create or edit
+                        an arbitrary block of text stored within
+                        the archive to describe its contents.
+                        (Supported by IMD and PRQM formats.)
+
+    set image label     [Not yet implemented]
+
+In general the "set" commands are for "advanced" use, although changing flags or
+hints to nonsensical values shouldn't cause any major issues.  One goal of the
+PERQmedia format is to capture metadata in the media archive directly, so that
+things like scans of the actual media label (for floppy or tape) and the dates
+and contact information of the archive's creator can be preserved.  Enhancements
+to PERQemu (and external tools like a Mac "quick look" generator!) may someday
+allow graphical browsing as part of the UI for selecting media to load.
+
+The "filesystem hint" bytes are purely advisory, but are also interpreted by the
+/etc/magic rules for identifying archives from the Unix/Linux command-line.  See
+the PERQemu source distribution (Docs/Magic.txt) for more info.
+
+
+---
+
+Last modified:  skeezicsb   Mon Nov 28 12:58:51 PST 2022
