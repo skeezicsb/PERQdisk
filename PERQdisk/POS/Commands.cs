@@ -304,7 +304,7 @@ namespace PERQdisk.POS
         }
 
         [Conditional("DEBUG")]
-        [Command("pos check params", "See if 'params' keyword works")]
+        [Command("pos check params", "Test 'params' keyword parsing [Debug]")]
         private void ParamsParse(params string[] args)
         {
             Console.WriteLine($"ParamsParse() called with {args.Length} arguments!");

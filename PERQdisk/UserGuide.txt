@@ -313,7 +313,7 @@ For casual use, plucking a few files out of an image ("copy *.pas .") should be
 simple and flexible and put things where you want.  For industrial strength, pro-
 level filesystem munging, PERQdisk extends the notion of the "default output
 directory" to a path that includes the disk name and full POS path.  For example
-(assuming the loaded file is "f0.phd" this "high speed, low drag" configuration
+(assuming the loaded file is "f0.phd") this "high speed, low drag" configuration
 means:
 
     Sys:> copy .
