@@ -33,6 +33,18 @@ the program:
     Linux:      Open a Terminal window and change to the PERQdisk directory;
                 Type "mono PERQdisk.exe".
 
+
+    ** WARNING **
+
+    On Ubunutu Linux (and possibly others) do NOT use the file manager's
+    "Run with mono runtime" menu option to try to launch the program; always
+    open a terminal that has a "reasonable" window geometry or PERQdisk
+    may quietly loop in the background throwing "divide by zero" exceptions
+    (filling up /var/log/syslog!) until you track down and kill the process.
+    PERQdisk v0.9.1 detects when the console has a reported buffer width of
+    zero and refuses to start up.
+
+
 On all platforms, a banner is printed and the command line interface (CLI) ">"
 prompt is issued.  From here all interactions with PERQdisk are through the CLI.
 Like PERQemu, the TAB key provides completion and prompts for arguments as each
@@ -663,4 +675,4 @@ the PERQemu source distribution (Docs/Magic.txt) for more info.
 
 ---
 
-Last modified:  skeezicsb   Mon Nov 28 12:58:51 PST 2022
+Last modified:  skeezicsb   Tue Nov 29 02:01:44 PST 2022

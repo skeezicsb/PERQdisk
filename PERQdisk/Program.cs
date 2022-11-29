@@ -76,6 +76,15 @@ namespace PERQdisk
                 Log.Categories = Category.All;
             }
 
+            // Ack!  Make sure we have an actual console to work with
+            if (Console.BufferWidth == 0)
+            {
+                // This may not actually be seen, but try logging it anyway
+                Console.WriteLine("** Cannot run on zero-width console!  Please run PERQdisk");
+                Console.WriteLine("   from a terminal or console with a reasonable geometry.");
+                return;
+            }
+
             // Set up command-line parser and GUI manager
             _cli = new CommandProcessor();
 
