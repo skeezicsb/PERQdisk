@@ -395,6 +395,25 @@ namespace PERQdisk
             return (count > len * .1);
         }
 
+        /// <summary>
+        /// Return true if the buffer contains POS/DOS-style CRLF text, rather
+        /// than Unix/Accent-style LF-only delimited lines.  Just check the 
+        /// first 1K at most.  Quick and dirty.
+        /// </summary>
+        public bool IsCRLFText(byte[] buf)
+        {
+            if (buf.Length < 2) return false;
+
+            var len = Math.Min(buf.Length, 1024);
+            var count = 0;
+
+            for (var i = 1; i < len; i++)
+            {
+                if (buf[i - 1] == CR && buf[i] == LF) count++;
+            }
+            return (count > 0);
+        }
+
         public bool IsPrintable(char c)
         {
             return (char.IsLetterOrDigit(c) ||

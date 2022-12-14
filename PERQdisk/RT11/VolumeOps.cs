@@ -260,11 +260,16 @@ namespace PERQdisk.RT11
 
             if (convert)
             {
-                // Same as above, in reverse (LF -> CRLF)
-                var bufStr = Encoding.UTF8.GetString(buf);
-                buf = Encoding.UTF8.GetBytes(bufStr.Replace("\n", "\r\n"));
+                // Don't bother if it's already POS format!  Otherwise the
+                // Replace() will double all the \r characters.  Doh.
+                if (!PERQdisk.CLI.IsCRLFText(buf))
+                {
+                    // Same as above, in reverse (LF -> CRLF)
+                    var bufStr = Encoding.UTF8.GetString(buf);
+                    buf = Encoding.UTF8.GetBytes(bufStr.Replace("\n", "\r\n"));
 
-                mode = Mode.Text;   // Show we changed the mode (aesthetics)
+                    mode = Mode.Text;   // Show we changed the mode (aesthetics)
+                }
             }
 
             var blocks = (buf.Length + 511) / 512;
