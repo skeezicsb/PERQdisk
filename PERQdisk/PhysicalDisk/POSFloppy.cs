@@ -256,7 +256,7 @@ namespace PERQdisk
                 blk.Sector = _sectorOrder[b.Sector, i];
 
                 physical = GetSector(blk);
-                physical.Data.CopyTo(logical.Data, i * Geometry.SectorSize);
+                physical.Data?.CopyTo(logical.Data, i * Geometry.SectorSize);
             }
 
             return logical;
@@ -278,7 +278,7 @@ namespace PERQdisk
             // But fudge the returned id from 0..25 -> 1..26
             fudge.SectorID++;
 
-            Log.Detail(Category.MediaLoader, "Read {0} (actual {1})", sec - 1, fudge.SectorID);
+            Log.Detail(Category.POS, "Read {0} (actual {1})", sec - 1, fudge.SectorID);
             return fudge;
         }
 
@@ -290,7 +290,7 @@ namespace PERQdisk
             // Map from 1..26 -> 0..25
             sec.SectorID--;
 
-            Log.Detail(Category.MediaLoader, "Write {0} (actual {1})", sec.SectorID, sec.SectorID + 1);
+            Log.Detail(Category.POS, "Write {0} (actual {1})", sec.SectorID, sec.SectorID + 1);
             base.Write(sec);
         }
 

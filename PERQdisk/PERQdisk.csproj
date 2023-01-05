@@ -16,7 +16,7 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <StartupObject>PERQdisk.PERQdisk</StartupObject>
-    <ApplicationIcon>PERQdiskIcon256x256.ico</ApplicationIcon>
+    <ApplicationIcon>PERQdisk.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,7 +29,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType></DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -97,7 +97,7 @@
     <None Include="COPYING.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="PERQdiskIcon256x256.ico" />
+    <None Include="PERQdisk.ico" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="RT11\" />

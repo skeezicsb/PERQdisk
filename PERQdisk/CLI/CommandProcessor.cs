@@ -534,6 +534,10 @@ namespace PERQdisk
                     }
                     break;
 
+                case DeviceType.TapeQIC:
+                    Console.WriteLine("To read tapes, please use the 'Stut' utility.");
+                    break;
+
                 case DeviceType.Unused:
                     Console.WriteLine("Unknown device type or can't read file.");
                     break;

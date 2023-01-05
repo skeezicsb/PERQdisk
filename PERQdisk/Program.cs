@@ -38,7 +38,9 @@ namespace PERQdisk
             // Some useful globals
             _baseDir = new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath;
             _baseDir = Path.GetDirectoryName(_baseDir);
-            Environment.CurrentDirectory = _baseDir;
+
+            // Don't switch to base dir by default
+            //Environment.CurrentDirectory = _baseDir;
 
             // Set a platform flag
             _hostIsUnix = (Environment.OSVersion.Platform == PlatformID.Unix ||

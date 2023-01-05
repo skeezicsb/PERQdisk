@@ -433,6 +433,9 @@ namespace PERQdisk.RT11
                     dst = System.IO.Path.Combine(hostDir, filePat);
                 }
 
+                // Todo: Aw, crap, forgot about checking for and creating the
+                // output dir here.  Try to make this whole mess more sane.
+
                 // Go for it
                 _volume.GetFile(file, dst, _ask, _confirm, _mode);
             }
