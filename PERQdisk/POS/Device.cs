@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -45,7 +45,7 @@ namespace PERQdisk.POS
         /// that can mount a POS filesystem, these will be LogicalDisks, but
         /// with type-specific address translations.
         /// </summary>
-        private LogicalDisk GetDevForPath(string path)
+        LogicalDisk GetDevForPath(string path)
         {
             var type = FileUtilities.GetDeviceTypeFromFile(path);
 
@@ -141,6 +141,6 @@ namespace PERQdisk.POS
             }
         }
 
-        private LogicalDisk _disk;
+        LogicalDisk _disk;
     }
 }

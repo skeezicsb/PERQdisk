@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -93,8 +93,8 @@ namespace PERQdisk.RT11
             return $"{day:#0}-{_months[mon]}-{yr:00}";
         }
 
-        private ushort _raw;
-        private string _cooked;
+        ushort _raw;
+        string _cooked;
 
         static readonly string[] _months = {
             "BAD", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
@@ -202,7 +202,7 @@ namespace PERQdisk.RT11
             Helper.WriteWord(buf, offset + 14, BitsInLastBlock);
         }
 
-        private byte[] _extraBytes;
-        private byte[] _dataBytes;
+        byte[] _extraBytes;
+        byte[] _dataBytes;
     }
 }

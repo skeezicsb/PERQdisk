@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -36,9 +36,14 @@ namespace PERQdisk
     {
         public MethodInvokeInfo(MethodInfo method, object instance)
         {
-            if (method == null || instance == null)
+            if (method == null)
             {
-                throw new ArgumentNullException("Command method and instance must be non-null");
+                throw new ArgumentNullException(nameof(method), "Command method must be non-null");
+            }
+
+            if (instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance), "Command instance must be non-null");
             }
 
             Method = method;
@@ -135,7 +140,7 @@ namespace PERQdisk
 
                 if (Param.ParameterType == typeof(bool))
                 {
-                    List<string> tmp = new List<string> { "true", "false" };
+                    var tmp = new List<string> { "true", "false" };
 
                     if (fuzzy)
                     {
@@ -190,7 +195,7 @@ namespace PERQdisk
             }
         }
 
-        private void SetHelperStrings()
+        void SetHelperStrings()
         {
             if (Param.ParameterType.IsEnum)
             {

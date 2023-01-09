@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -76,7 +76,7 @@ namespace PERQdisk
 
                 while (!sr.EndOfStream)
                 {
-                    string line = sr.ReadLine();
+                    var line = sr.ReadLine();
 
                     // todo: really should check to make sure this isn't a binary
                     // file, since accidentally reading in a 25+MB disk image as a
@@ -113,14 +113,14 @@ namespace PERQdisk
             // A line beginning with an "@" indicates a script to execute
             if (line.StartsWith("@", StringComparison.CurrentCulture))
             {
-                string scriptFile = line.Substring(1);
+                var scriptFile = line.Substring(1);
 
                 ExecuteScript(scriptFile, true);
                 return;
             }
 
             string[] args = null;
-            CommandNode command = GetCommandFromString(line, out args);
+            var command = GetCommandFromString(line, out args);
 
             if (command == null)
             {
@@ -172,7 +172,7 @@ namespace PERQdisk
         /// <summary>
         /// Invokes the method for a command.
         /// </summary>
-        private void InvokeConsoleMethod(CommandNode command, string[] args)
+        void InvokeConsoleMethod(CommandNode command, string[] args)
         {
             if (command.Method == null)
             {
@@ -304,9 +304,9 @@ namespace PERQdisk
         /// </summary>
         public static List<string> SplitArgs(string commandString)
         {
-            List<string> args = new List<string>();
-            StringBuilder sb = new StringBuilder();
-            ParseState state = ParseState.NonWhiteSpace;
+            var args = new List<string>();
+            var sb = new StringBuilder();
+            var state = ParseState.NonWhiteSpace;
 
             commandString = commandString.Trim();
 
@@ -389,11 +389,11 @@ namespace PERQdisk
         /// arguments.  Validates arguments along the way and returns a node
         /// with a valid Method or null.
         /// </summary>
-        private CommandNode GetCommandFromString(string command, out string[] args)
+        CommandNode GetCommandFromString(string command, out string[] args)
         {
             args = null;
 
-            List<string> cmdWords = SplitArgs(command);
+            var cmdWords = SplitArgs(command);
 
             if (cmdWords.Count == 0)
             {
@@ -401,7 +401,7 @@ namespace PERQdisk
             }
 
             CommandNode current = _currentRoot;
-            List<string> argWords = new List<string>();
+            var argWords = new List<string>();
 
             while (cmdWords.Count > 0)
             {
@@ -590,7 +590,7 @@ namespace PERQdisk
         /// or defining top-level commands that can be accessed from other levels
         /// of the hierarchy.  Does NOT check for name collisions, though...
         /// </remarks>
-        private void BuildCommandTree(List<object> commandObjects)
+        void BuildCommandTree(List<object> commandObjects)
         {
             // Create the root of the command tree
             _commandRoot = new CommandNode("Root", "");
@@ -751,7 +751,7 @@ namespace PERQdisk
         /// the command tree.  (VS2022 just seems to be completely broken for
         /// some reason, but this does still happen in earlier versions.  Ugh.)
         /// </summary>
-        private bool IsDebugMethod(MethodInfo mi)
+        bool IsDebugMethod(MethodInfo mi)
         {
 #if !DEBUG
             object[] attribs = mi.GetCustomAttributes(typeof(ConditionalAttribute), true);
@@ -774,7 +774,7 @@ namespace PERQdisk
         /// Builds a dictionary that maps a particular keyword to a set of
         /// argument nodes that reference it.
         /// </summary>
-        private void BuildMatchDictionary(List<ArgumentNode> list)
+        void BuildMatchDictionary(List<ArgumentNode> list)
         {
             // Set up the dictionary for KeywordMatch-tagged nodes
             _matchDict = new Dictionary<string, ArgumentNode[]>();
@@ -812,7 +812,7 @@ namespace PERQdisk
         /// runs once at startup and it's way simpler than trying to construct
         /// the list by traversing the command tree after the fact.
         /// </remarks>
-        private void BuildCommandsHelp(List<CommandHelp> list)
+        void BuildCommandsHelp(List<CommandHelp> list)
         {
             // Allocate the dictionary to copy into (by key)
             _commandsAtNode = new Dictionary<string, CommandHelp[]>();
@@ -970,10 +970,10 @@ namespace PERQdisk
             QuotedString = 2,
         }
 
-        private CommandNode _commandRoot;
-        private CommandNode _currentRoot;
+        CommandNode _commandRoot;
+        CommandNode _currentRoot;
 
-        private Dictionary<string, CommandHelp[]> _commandsAtNode;
-        private Dictionary<string, ArgumentNode[]> _matchDict;
+        Dictionary<string, CommandHelp[]> _commandsAtNode;
+        Dictionary<string, ArgumentNode[]> _matchDict;
     }
 }

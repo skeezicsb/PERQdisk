@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -434,7 +434,7 @@ namespace PERQdisk.RT11
         /// Coalesce adjacent free blocks after a delete operation.  Rebuilds
         /// the directory as necessary.  Always succeeds even if no changes made.
         /// </summary>
-        private void Coalesce()
+        void Coalesce()
         {
             if (_files.Count < 2) return;   // Nothing to do
 
@@ -563,7 +563,7 @@ namespace PERQdisk.RT11
         /// Stitch together two logical blocks into a 1 Kbyte directory "segment".
         /// Each one contains a copy of the volume info and up to 62 file entries.
         /// </summary>
-        private Sector GetSegment(uint lbn)
+        Sector GetSegment(uint lbn)
         {
             var segment = new Sector(0, 0, (ushort)lbn, 1024);
 
@@ -580,7 +580,7 @@ namespace PERQdisk.RT11
         /// Split a 1 Kbyte directory segment into two logical blocks and write
         /// 'em back to the underlying storage.
         /// </summary>
-        private void PutSegment(uint lbn, byte[] data)
+        void PutSegment(uint lbn, byte[] data)
         {
             _disk.PutSector(lbn, Helper.CopyFrom(data, 0, 512));
             _disk.PutSector(lbn + 1, Helper.CopyFrom(data, 512, 512));
@@ -590,7 +590,7 @@ namespace PERQdisk.RT11
         /// Sorts the directory by StartBlock.  Should only be needed after new
         /// files are added?
         /// </summary>
-        private void SortDirectory()
+        void SortDirectory()
         {
             // Nothing to sort
             if (_files.Count < 2) return;
@@ -601,11 +601,11 @@ namespace PERQdisk.RT11
             });
         }
 
-        private Volume _vol;
-        private RT11Floppy _disk;
-        private List<DirectoryEntry> _files;
+        Volume _vol;
+        RT11Floppy _disk;
+        List<DirectoryEntry> _files;
 
-        private int _numFiles;
-        private int _blksFree;
+        int _numFiles;
+        int _blksFree;
     }
 }

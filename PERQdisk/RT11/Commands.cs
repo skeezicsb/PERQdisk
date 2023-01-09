@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -51,7 +51,7 @@ namespace PERQdisk.RT11
 
 
         [Command("rt11", Prefix = true, Discreet = true)]
-        private void EnterFloppy()
+        void EnterFloppy()
         {
             // Prevent sneakiness
             if (PERQdisk.Dev == null) return;
@@ -75,7 +75,7 @@ namespace PERQdisk.RT11
 
         [Command("rt11 unload", "Unload the current floppy")]
         [Command("rt11 done")]
-        private void LeaveFloppy()
+        void LeaveFloppy()
         {
             Console.WriteLine("Dismounting volume...");
 
@@ -91,12 +91,12 @@ namespace PERQdisk.RT11
         }
 
         [Command("rt11 commands", "Show available commands")]
-        private void ShowFloppyCommands()
+        void ShowFloppyCommands()
         {
             PERQdisk.CLI.ShowCommands("rt11");
         }
 
-        private bool WriteCheck()
+        bool WriteCheck()
         {
             if (!_disk.Info.IsWritable)
             {
@@ -116,14 +116,14 @@ namespace PERQdisk.RT11
         //
 
         [Command("rt11 ask", "Set ASK flag to true")]
-        private void SetAsk()
+        void SetAsk()
         {
             _ask = true;
             Console.WriteLine("Ask ON.");
         }
 
         [Command("rt11 noask", "Set ASK flag to false")]
-        private void NoAsk()
+        void NoAsk()
         {
             _ask = false;
             Console.WriteLine("Ask OFF.");
@@ -131,21 +131,21 @@ namespace PERQdisk.RT11
 
 
         [Command("rt11 confirm", "Set CONFIRM flag to true")]
-        private void SetConfirm()
+        void SetConfirm()
         {
             _confirm = true;
             Console.WriteLine("Confirm ON.");
         }
 
         [Command("rt11 noconfirm", "Set CONFIRM flag to false")]
-        private void NoConfirm()
+        void NoConfirm()
         {
             _confirm = false;
             Console.WriteLine("Confirm OFF.");
         }
 
         [Command("rt11 fast", "Set flags for speed!")]
-        private void GoFast()
+        void GoFast()
         {
             _ask = false;
             _confirm = false;
@@ -154,7 +154,7 @@ namespace PERQdisk.RT11
         }
 
         [Command("rt11 safe", "Set flags for safety")]
-        private void BeSafe()
+        void BeSafe()
         {
             _ask = true;
             _confirm = true;
@@ -163,27 +163,27 @@ namespace PERQdisk.RT11
         }
 
         [Command("rt11 mode", "Show the current transfer mode")]
-        private void ShowMode()
+        void ShowMode()
         {
             Console.WriteLine($"Mode is {_mode.ToString().ToUpper()}.");
         }
 
         [Command("rt11 mode", "Set the current transfer mode")]
-        private void SetMode(Mode mode)
+        void SetMode(Mode mode)
         {
             _mode = mode;
             ShowMode();
         }
 
         [Command("rt11 auto", "Set the current transfer mode to AUTO")]
-        private void SetAuto()
+        void SetAuto()
         {
             _mode = Mode.Auto;
             ShowMode();
         }
 
         [Command("rt11 binary", "Set the current transfer mode to BINARY")]
-        private void SetBinary()
+        void SetBinary()
         {
             _mode = Mode.Binary;
             ShowMode();
@@ -191,14 +191,14 @@ namespace PERQdisk.RT11
 
         [Command("rt11 text", "Set the current transfer mode to TEXT")]
         [Command("rt11 ascii")]
-        private void SetTextMode()
+        void SetTextMode()
         {
             _mode = Mode.Text;
             ShowMode();
         }
 
         [Command("rt11 details", "Show current flags and modes")]
-        private void ShowSettings()
+        void ShowSettings()
         {
             // Whip up some stats...
             var blocksInUse = (_disk.MaxLBN - Volume.UserStart) - _volume.Dir.BlocksFree;
@@ -230,7 +230,7 @@ namespace PERQdisk.RT11
         [Command("rt11 fsfloppy")]
         [Command("rt11 mount")]
         [Command("rt11 dismount")]
-        private void CompatNoop()
+        void CompatNoop()
         {
 #if DEBUG
             Console.WriteLine("[Compatibility command, ignored.]");
@@ -247,7 +247,7 @@ namespace PERQdisk.RT11
         /// Prints the directory in PERQ "FLOPPY" program format.
         /// </summary>
         [Command("rt11 directory", "List contents of the directory")]
-        private void PrintDirectory()
+        void PrintDirectory()
         {
             var nFiles = 0;
             var nFree = 0;
@@ -284,18 +284,18 @@ namespace PERQdisk.RT11
 
         [Command("rt11 type", "Print contents of floppy file(s)")]
         [Command("rt11 more")]
-        private void TypeFile(string filename)
+        void TypeFile(string filename)
         {
             DoTypeFile(filename, true);
         }
 
         [Command("rt11 cat", "Dump contents of a file")]
-        private void CatFile(string filename)
+        void CatFile(string filename)
         {
             DoTypeFile(filename, false);
         }
 
-        private void DoTypeFile(string filePat, bool pause)
+        void DoTypeFile(string filePat, bool pause)
         {
             var found = new List<DirectoryEntry>();
 
@@ -343,7 +343,7 @@ namespace PERQdisk.RT11
         /// and a destination directory to be named.
         /// </summary>
         [Command("rt11 get", "Get one or more files from the floppy")]
-        private void GetFiles(string filePat, string hostName = "")
+        void GetFiles(string filePat, string hostName = "")
         {
             // Set the default destination directory
             var hostDir = _volume.DefaultOutputPath();
@@ -447,7 +447,7 @@ namespace PERQdisk.RT11
         /// a wildcard to select files to copy.
         /// </summary>
         [Command("rt11 put", "Put one or more files onto the floppy")]
-        private void PutFiles(string hostPat, string fileName = "")
+        void PutFiles(string hostPat, string fileName = "")
         {
             if (!WriteCheck()) return;
 
@@ -516,7 +516,7 @@ namespace PERQdisk.RT11
         /// Renames a file on the floppy.
         /// </summary>
         [Command("rt11 rename", "Rename a file on the floppy")]
-        private void RenameFile(string from, string to)
+        void RenameFile(string from, string to)
         {
             if (!WriteCheck()) return;
 
@@ -542,7 +542,7 @@ namespace PERQdisk.RT11
         /// "tentative" so they can be undeleted?  Is that what that's for?
         /// </summary>
         [Command("rt11 delete", "Delete files from the floppy")]
-        private void DeleteFiles(string filePat)
+        void DeleteFiles(string filePat)
         {
             if (!WriteCheck()) return;
 
@@ -579,7 +579,7 @@ namespace PERQdisk.RT11
         /// Compare a floppy file to a host file.  A nice addition to add...
         /// </summary>
         [Command("rt11 compare", "Compare a floppy file to a host file")]
-        private void CompareFile()
+        void CompareFile()
         {
             Console.WriteLine("Not yet implemented.");
         }
@@ -590,7 +590,7 @@ namespace PERQdisk.RT11
         /// hardware this is painfully slow, as you might imagine!
         /// </summary>
         [Command("rt11 compress", "Coalesce free space on the floppy")]
-        private void CompressFloppy()
+        void CompressFloppy()
         {
             if (!WriteCheck()) return;
 
@@ -602,7 +602,7 @@ namespace PERQdisk.RT11
         /// Does not wipe the data blocks; use Format for that...
         /// </summary>
         [Command("rt11 zero", "Erase the floppy and create a new, empty directory")]
-        private void ZeroFloppy()
+        void ZeroFloppy()
         {
             if (!WriteCheck()) return;
 
@@ -651,7 +651,7 @@ namespace PERQdisk.RT11
 
         [Conditional("DEBUG")]
         [Command("rt11 check regex", "Match files with a regular expression")]
-        private void CheckRegex(string pat)
+        void CheckRegex(string pat)
         {
             foreach (var f in _volume.FindFiles(pat))
             {
@@ -687,11 +687,11 @@ namespace PERQdisk.RT11
 
         #endregion
 
-        private RT11Floppy _disk;
-        private Volume _volume;
-        private Mode _mode;
+        RT11Floppy _disk;
+        Volume _volume;
+        Mode _mode;
 
-        private bool _ask;
-        private bool _confirm;
+        bool _ask;
+        bool _confirm;
     }
 }

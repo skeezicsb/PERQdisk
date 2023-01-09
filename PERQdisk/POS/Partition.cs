@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -76,16 +76,16 @@ namespace PERQdisk.POS
         public Address FreeTail => _freeTail;
 
 
-        private Address _freeHead;
-        private Address _freeTail;
-        private uint _numberFree;
-        private Address _rootDirectoryID;
-        private Address _badSegmentID;
-        private string _partitionName;
-        private Address _partitionStart;
-        private Address _partitionEnd;
-        private Address _partitionRoot;
-        private ushort _partitionType;
+        Address _freeHead;
+        Address _freeTail;
+        uint _numberFree;
+        Address _rootDirectoryID;
+        Address _badSegmentID;
+        string _partitionName;
+        Address _partitionStart;
+        Address _partitionEnd;
+        Address _partitionRoot;
+        ushort _partitionType;
     }
 
 
@@ -151,8 +151,8 @@ namespace PERQdisk.POS
         }
 
 
-        private LogicalDisk _disk;
-        private PartitionInformationBlock _pib;
-        private Directory _root;
+        LogicalDisk _disk;
+        PartitionInformationBlock _pib;
+        Directory _root;
     }
 }

@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -139,7 +139,7 @@ namespace PERQdisk
             {
                 try
                 {
-                    string cmd = _editor.GetLine();
+                    var cmd = _editor.GetLine();
 
                     if (cmd != string.Empty)
                     {
@@ -159,7 +159,7 @@ namespace PERQdisk
         /// A hack to run a command without having to root around in the tree
         /// or instantiating the command's class to find the method.  Oof.
         /// </summary>
-        private void RunCommand(string cmd)
+        void RunCommand(string cmd)
         {
             try
             {
@@ -431,7 +431,7 @@ namespace PERQdisk
         #region Top-level commands
 
         [Command("about", "About PERQdisk")]
-        private void About()
+        void About()
         {
             PERQdisk.PrintBanner();
         }
@@ -553,7 +553,7 @@ namespace PERQdisk
 
         [Command("create floppy", "Create a new RT-11 data floppy")]
         [Command("rt11 format", "Format a new floppy")]
-        private void Create(string filename, bool doubleSided = true, bool doubleDensity = false)
+        void Create(string filename, bool doubleSided = true, bool doubleDensity = false)
         {
             var geom = (doubleSided ?
                             (doubleDensity ? DeviceGeometry.DSDD : DeviceGeometry.DSSD) :
@@ -591,7 +591,7 @@ namespace PERQdisk
         /// </summary>
         [Command("pos pause", "Pause execution and wait for user to press RETURN")]
         [Command("rt11 pause", "Pause execution and wait for user to press RETURN")]
-        private void Pause(string message = "")
+        void Pause(string message = "")
         {
             Console.WriteLine(message);
             Console.Write("Press RETURN to continue: ");
@@ -599,7 +599,7 @@ namespace PERQdisk
         }
 
         [Command("done", Discreet = true)]
-        private void Done()
+        void Done()
         {
             Console.WriteLine("Already at top-level.");
         }
@@ -607,13 +607,13 @@ namespace PERQdisk
         [Command("quit", "Quit PERQdisk")]
         [Command("pos quit")]
         [Command("rt11 quit")]
-        private void Quit()
+        void Quit()
         {
             _running = false;
         }
 
         [Command("quit without save", "Quit PERQdisk without committing changes")]
-        private void QuitNow()
+        void QuitNow()
         {
             _running = false;
         }
@@ -623,7 +623,7 @@ namespace PERQdisk
         #region CLI Help (for now)
 
         [Command("help", "Show PERQdisk help")]
-        private void Help()
+        void Help()
         {
             Console.WriteLine("This is PERQdisk, a standalone utility for reading PERQ POS filesystems\n" +
                               "from archived floppy or hard disk images.  It supports all of the media\n" +
@@ -663,8 +663,8 @@ namespace PERQdisk
         const byte FF = (byte)'\f';
 
 
-        private bool _running;
-        private CommandExecutor _exec;
-        private CommandPrompt _editor;
+        bool _running;
+        CommandExecutor _exec;
+        CommandPrompt _editor;
     }
 }

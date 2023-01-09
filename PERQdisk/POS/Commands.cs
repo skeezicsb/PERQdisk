@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -76,7 +76,7 @@ namespace PERQdisk.POS
 
         [Command("pos unload", "Unload the current media file")]
         [Command("pos done")]
-        private void LeaveDisk()
+        void LeaveDisk()
         {
             Console.WriteLine("Dismounting volume...");
 
@@ -92,20 +92,20 @@ namespace PERQdisk.POS
         }
 
         [Command("pos commands", "Show available commands")]
-        private void ShowDiskCommands()
+        void ShowDiskCommands()
         {
             PERQdisk.CLI.ShowCommands("pos");
         }
 
 
         [Command("pos path", "Print the current directory path")]
-        private void ChangeDirectory()
+        void ChangeDirectory()
         {
             Console.WriteLine("Current path is " + _volume.Current.Path);
         }
 
         [Command("pos path", "Change the current directory path")]
-        private void ChangeDirectory(string newDir)
+        void ChangeDirectory(string newDir)
         {
             _volume.SetPath(newDir);
             UpdatePrompt();
@@ -113,53 +113,53 @@ namespace PERQdisk.POS
 
 
         [Command("pos details", "Show filesystem summary")]
-        private void DoDetails()
+        void DoDetails()
         {
             _volume.Details();
         }
 
 
         [Command("pos directory", "List directory contents")]
-        private void PrintDirectory(string pattern = "", bool showSize = false)
+        void PrintDirectory(string pattern = "", bool showSize = false)
         {
             _volume.DoDirectory(pattern, showSize);
         }
 
 
         [Command("pos tree", "Show the directory tree 'graphically'")]
-        private void PrintDirTree(string dir = "")
+        void PrintDirTree(string dir = "")
         {
             _volume.DirTree(dir);
         }
 
         [Command("pos type", "Print contents of a file")]
         [Command("pos more")]
-        private void TypeFile(string filename)
+        void TypeFile(string filename)
         {
             _volume.DoTypeFile(filename, true);
         }
 
         [Command("pos cat", "Dump contents of a file")]
-        private void CatFile(string filename)
+        void CatFile(string filename)
         {
             _volume.DoTypeFile(filename, false);
         }
 
         [Command("pos copy", "Copy file(s) to the default output directory")]
-        private void Copy(string source) // , params string[] args)
+        void Copy(string source) // , params string[] args)
         {
             // todo: figure out the bloody args parsing
             _volume.DoCopy(source, Paths.OutputDir);
         }
 
         [Command("pos copy to", "Copy file(s) from the image to the host")]
-        private void CopyTo(string dest, string source) // , params string[] args)
+        void CopyTo(string dest, string source) // , params string[] args)
         {
             _volume.DoCopy(source, dest);
         }
 
         [Command("pos compare", "Compare a POS file to a host file")]
-        private void Compare(string file, string hostFile)
+        void Compare(string file, string hostFile)
         {
             Console.WriteLine("Not yet implemented.");
             return;
@@ -178,7 +178,7 @@ namespace PERQdisk.POS
 
         [Conditional("DEBUG")]
         [Command("pos info", "Show information about a file or directory")]
-        private void PrintInfo(string file)
+        void PrintInfo(string file)
         {
             var path = _volume.Resolve(file);
 
@@ -230,7 +230,7 @@ namespace PERQdisk.POS
 
         [Conditional("DEBUG")]
         [Command("pos show ranges", "Show disk limits [Debug]")]
-        private void ShowRanges(bool verbosely = false)
+        void ShowRanges(bool verbosely = false)
         {
             Console.WriteLine("Physical disk limits:");
 
@@ -276,12 +276,12 @@ namespace PERQdisk.POS
 
         [Conditional("DEBUG")]
         [Command("pos dump directory", "Dump the raw directory structure [Debug]")]
-        private void DumpDirTree()
+        void DumpDirTree()
         {
             DumpDir(_volume.Root, 0);
         }
 
-        private void DumpDir(Directory d, int depth)
+        void DumpDir(Directory d, int depth)
         {
             Console.WriteLine($"Node {d.Name} (depth {d.Depth}) has {d.Contents.Count} files, {d.Children.Count} subdirectories");
             Console.WriteLine($"Full path is '{d.Path}'");
@@ -296,7 +296,7 @@ namespace PERQdisk.POS
 
         [Conditional("DEBUG")]
         [Command("pos check path", "Test path/pattern parsing [Debug]")]
-        private void PathParse(string pat)
+        void PathParse(string pat)
         {
             var p = _volume.Resolve(pat);
 
@@ -305,7 +305,7 @@ namespace PERQdisk.POS
 
         [Conditional("DEBUG")]
         [Command("pos check params", "Test 'params' keyword parsing [Debug]")]
-        private void ParamsParse(params string[] args)
+        void ParamsParse(params string[] args)
         {
             Console.WriteLine($"ParamsParse() called with {args.Length} arguments!");
         }
@@ -313,7 +313,7 @@ namespace PERQdisk.POS
         #endregion
 
 
-        private LogicalDisk _disk;
-        private Volume _volume;
+        LogicalDisk _disk;
+        Volume _volume;
     }
 }

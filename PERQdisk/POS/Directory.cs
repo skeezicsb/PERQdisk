@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -210,14 +210,14 @@ namespace PERQdisk.POS
             return d.DirFile;
         }
 
-        private LogicalDisk _disk;
-        private File _file;
-        private Directory _parent;
-        private List<Directory> _children;
-        private List<File> _contents;
+        LogicalDisk _disk;
+        File _file;
+        Directory _parent;
+        List<Directory> _children;
+        List<File> _contents;
 
-        private string _name;
-        private string _fullName;
-        private int _depth;
+        string _name;
+        string _fullName;
+        int _depth;
     }
 }

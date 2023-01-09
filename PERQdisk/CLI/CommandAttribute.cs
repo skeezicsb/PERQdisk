@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -80,10 +80,10 @@ namespace PERQdisk
             set { _prefix = value; }
         }
 
-        private string _commandName;
-        private string _description;
-        private bool _hidden;
-        private bool _prefix;
+        string _commandName;
+        string _description;
+        bool _hidden;
+        bool _prefix;
     }
 
     /// <summary>
@@ -123,7 +123,6 @@ namespace PERQdisk
 
         public string Keyword => _match;
 
-        private readonly string _match;
+        readonly string _match;
     }
-
 }

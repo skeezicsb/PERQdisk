@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -21,8 +21,6 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
-using System;
 
 using PERQmedia;
 
@@ -66,7 +64,7 @@ namespace PERQdisk.POS
             BuildData(dibSector);
         }
 
-        private void BuildData(Sector dibSector)
+        void BuildData(Sector dibSector)
         {
             // Read boot and interpreter tables (PDAs)
             for (int i = 0; i < _bootTable.Length; i++)
@@ -108,19 +106,18 @@ namespace PERQdisk.POS
 
 
         // Constants
-        private const int BootTableStart = 20;
-        private const int InterpreterTableStart = 124;
-        private const int PartitionTableStart = 244;
+        const int BootTableStart = 20;
+        const int InterpreterTableStart = 124;
+        const int PartitionTableStart = 244;
 
-        private Address[] _bootTable;
-        private Address[] _interpreterTable;
-        private string _deviceName;
-        private Address _deviceStart;
-        private Address _deviceEnd;
-        private Address[] _pibEntries;
-        private Address _deviceRoot;
-        private DeviceCode _deviceType;
-        private PartitionType _partType;
+        Address[] _bootTable;
+        Address[] _interpreterTable;
+        string _deviceName;
+        Address _deviceStart;
+        Address _deviceEnd;
+        Address[] _pibEntries;
+        Address _deviceRoot;
+        DeviceCode _deviceType;
+        PartitionType _partType;
     }
-
 }

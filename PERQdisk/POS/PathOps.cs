@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -62,7 +62,7 @@ namespace PERQdisk.POS
         /// file pattern comes back non-empty (meaning they specified a file, not
         /// a directory) return null.
         /// </summary>
-        private Directory ResolveDirectory(string path)
+        Directory ResolveDirectory(string path)
         {
             var dir = Resolve(path);
 
@@ -214,7 +214,7 @@ namespace PERQdisk.POS
         /// producing lists of matching partitions, directories and files.  This
         /// is a Cold War nuclear stockpile level of overkill.
         /// </summary>
-        private void Qualify()
+        void Qualify()
         {
             _isValid = false;
 
@@ -233,7 +233,7 @@ namespace PERQdisk.POS
         /// the mounted volume name; otherwise supplies it).  Sets _devPart and
         /// returns true if parsing is complete, false if there's more to parse.
         /// </summary>
-        private bool QualifyDev()
+        bool QualifyDev()
         {
             // Get the device separator
             var idx = _original.IndexOf(':');
@@ -264,7 +264,7 @@ namespace PERQdisk.POS
         /// <summary>
         /// Pull out any ".." or "." elements in a path (string).
         /// </summary>
-        private string ResolveDots(string path)
+        string ResolveDots(string path)
         {
             var stack = new Stack<string>();
             var result = string.Empty;
@@ -310,7 +310,7 @@ namespace PERQdisk.POS
         /// indicate status and populates _partPart, _wildParts appropriately.
         /// Removes the partition spec from _resolved.
         /// </returns>
-        private bool QualifyPart()
+        bool QualifyPart()
         {
             var partStr = string.Empty;
 
@@ -390,7 +390,7 @@ namespace PERQdisk.POS
         /// _exactly_ one directory then assume that's what was specified and
         /// we're done, otherwise return false and set _resolved to continue.
         /// </returns>
-        private void QualifyDir()
+        void QualifyDir()
         {
             // Break down the unresolved path into its directory components
             var levels = _resolved.Split('>');
@@ -463,7 +463,7 @@ namespace PERQdisk.POS
         /// the specified level in the hierarchy and does a depth-first search,
         /// adding directories (or plain files at the leaf node).
         /// </summary>
-        private int DoOneLevel(Directory dir, string[] path, int level)
+        int DoOneLevel(Directory dir, string[] path, int level)
         {
             var count = 0;
             var pad = " ".PadLeft(level * 2 + 5);   // debug
@@ -521,19 +521,19 @@ namespace PERQdisk.POS
         }
 
 
-        private Volume _volume;
+        Volume _volume;
 
-        private string _original;
-        private string _devPart;
-        private string _partPart;
-        private string _dirPart;
-        private string _filePart;
-        private string _resolved;
+        string _original;
+        string _devPart;
+        string _partPart;
+        string _dirPart;
+        string _filePart;
+        string _resolved;
 
-        private List<Partition> _wildParts;
-        private List<Directory> _wildDirs;
-        private List<File> _wildFiles;
+        List<Partition> _wildParts;
+        List<Directory> _wildDirs;
+        List<File> _wildFiles;
 
-        private bool _isValid;
+        bool _isValid;
     }
 }

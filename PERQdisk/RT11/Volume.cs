@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -87,7 +87,7 @@ namespace PERQdisk.RT11
         /// Initialize an empty volume with default values.  This allows us to
         /// create new, blank floppies from thin air (outside of PERQemu).
         /// </summary>
-        private void InitVolumeInfo()
+        void InitVolumeInfo()
         {
             _segsAvail = DirSegMax;
             _nextSeg = 0;
@@ -217,16 +217,16 @@ namespace PERQdisk.RT11
                               Regex.IsMatch(x.Filename, match, RegexOptions.IgnoreCase));
         }
 
-        private ushort _segsAvail;
-        private ushort _nextSeg;
-        private ushort _highSeg;
-        private ushort _extraBytes;
-        private ushort _startSeg;
+        ushort _segsAvail;
+        ushort _nextSeg;
+        ushort _highSeg;
+        ushort _extraBytes;
+        ushort _startSeg;
 
-        private RT11Floppy _disk;
-        private Directory _dir;
+        RT11Floppy _disk;
+        Directory _dir;
 
-        private bool _dryrun;
+        bool _dryrun;
 
     }
 }

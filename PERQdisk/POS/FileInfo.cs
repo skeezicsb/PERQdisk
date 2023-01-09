@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -84,7 +84,7 @@ namespace PERQdisk.POS
             _year = (ushort)(((value & 0xfc000000) >> 26) + 1980);
         }
 
-        private byte Limit(uint value, byte low, byte high)
+        byte Limit(uint value, byte low, byte high)
         {
             return (byte)Math.Max(Math.Min(value, high), low);
         }
@@ -97,12 +97,12 @@ namespace PERQdisk.POS
             return $"{_day:d2}-{_months[_month]}-{_year:d4} {_hour:d2}:{_minute:d2}:{_second:d2}";
         }
 
-        private byte _hour;
-        private byte _day;
-        private byte _second;
-        private byte _minute;
-        private byte _month;
-        private ushort _year;
+        byte _hour;
+        byte _day;
+        byte _second;
+        byte _minute;
+        byte _month;
+        ushort _year;
 
         static readonly string[] _months = {
             "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -198,7 +198,7 @@ namespace PERQdisk.POS
         /// Derive SimpleName from the full name.  For directories, remove the
         /// .DR extension to make parsing simpler.  The full name is unmodified.
         /// </summary>
-        private string MakeSimple()
+        string MakeSimple()
         {
             var simple = _fileName;
 
@@ -243,5 +243,4 @@ namespace PERQdisk.POS
         uint _lastAddress;
         uint _lastNegativeAddress;
     }
-
 }

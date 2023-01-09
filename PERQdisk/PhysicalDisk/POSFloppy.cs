@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -225,7 +225,7 @@ namespace PERQdisk
         /// All filesystem floppies set aside sectors 1-2 to store the logical
         /// headers that are present in hard disk formats.
         /// </remarks>
-        private Sector CreateLogicalBlock(Block b)
+        Sector CreateLogicalBlock(Block b)
         {
             // Create a new block with hard disk geometry
             var logical = new Sector(b.Cylinder, b.Head, b.Sector, 512, 16);
@@ -273,7 +273,7 @@ namespace PERQdisk
         public override Sector Read(ushort cyl, byte head, ushort sec)
         {
             // Read from 1..26 -> 0..25
-            Sector fudge = base.Read(cyl, head, (ushort)(sec - 1));
+            var fudge = base.Read(cyl, head, (ushort)(sec - 1));
 
             // But fudge the returned id from 0..25 -> 1..26
             fudge.SectorID++;
@@ -387,16 +387,16 @@ namespace PERQdisk
         }
 
         // A container for our logical (filesystem) view of the floppy
-        private StorageDevice _logicalDisk;
+        StorageDevice _logicalDisk;
 
-        private byte[,] _sectorOrder;
-        private ushort[] _deskewTable;
+        byte[,] _sectorOrder;
+        ushort[] _deskewTable;
 
-        private uint _maxLBN;
+        uint _maxLBN;
 
-        private byte _bootBlocksOffset;
-        private byte _bootCylsOffset;
-        private byte _logicalSectors;
-        private byte _sectorsPerBlock;
+        byte _bootBlocksOffset;
+        byte _bootCylsOffset;
+        byte _logicalSectors;
+        byte _sectorsPerBlock;
     }
 }

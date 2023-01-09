@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -215,7 +215,7 @@ namespace PERQdisk.RT11
         }
 
 
-        private static void InitEncoder()
+        static void InitEncoder()
         {
             // @Rad50 = (' ', 'A'..'Z', '$', '.', "\377", '0'..'9');   # Rad50 decodes
             // %Rad05 = (map { $_ => $i++ } @Rad50 );                  # Rad05 encodes
@@ -325,7 +325,7 @@ namespace PERQdisk.RT11
             public string Expected6dot3;
         }
 
-        private static Hashtable _encoder;
-        private static char[] _decoder;
+        static Hashtable _encoder;
+        static char[] _decoder;
     }
 }

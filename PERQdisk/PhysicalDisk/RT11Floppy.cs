@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -76,7 +76,7 @@ namespace PERQdisk
         /// <summary>
         /// Gets the address of the first physical block of a file from its LBN.
         /// </summary>
-        private Block GetFirstPhysicalBlock(uint lbn)
+        Block GetFirstPhysicalBlock(uint lbn)
         {
             if (lbn > _maxLBN)
             {
@@ -118,7 +118,7 @@ namespace PERQdisk
         /// For a given physical block, compute the skew and interlace to get
         /// the next one in the nutty RT11 interleaving scheme.
         /// </summary>
-        private Block GetNextPhysicalBlock(Block cur)
+        Block GetNextPhysicalBlock(Block cur)
         {
             var trk = cur.Cylinder;
             var sec = cur.Sector;
@@ -156,7 +156,7 @@ namespace PERQdisk
         /// Returns a 512-byte logical block, made from 2 or 4 physical floppy
         /// sectors (depending on density).
         /// </summary>
-        private Sector ReadLogicalBlock(uint lbn)
+        Sector ReadLogicalBlock(uint lbn)
         {
             Log.Debug(Category.RT11, "GetSector: {0}", lbn);
 
@@ -193,7 +193,7 @@ namespace PERQdisk
         /// Applies all the nutty interleaving/skew calculations.  Returns
         /// false if anything goes haywire.
         /// </summary>
-        private void WriteLogicalBlock(uint lbn, byte[] data)
+        void WriteLogicalBlock(uint lbn, byte[] data)
         {
             Log.Debug(Category.RT11, "PutSector: {0}", lbn);
 
@@ -239,7 +239,7 @@ namespace PERQdisk
         /// the overloaded Read() since that's used at media loading time, which
         /// would be a problem.  This ain't pretty. :-|
         /// </remarks>
-        private Sector Read(Block blk)
+        Sector Read(Block blk)
         {
             // Apply transforms: skip cyl 0, map sector from 1..26 -> 0..25
             var trk = (ushort)(blk.Cylinder + 1);
@@ -261,7 +261,7 @@ namespace PERQdisk
         /// <summary>
         /// Do a physical write with the RT11 translations applied.
         /// </summary>
-        private void Write(Block blk, byte[] data)
+        void Write(Block blk, byte[] data)
         {
             Log.Debug(Category.RT11, "Writing block {0}", blk);
 
@@ -295,7 +295,7 @@ namespace PERQdisk
         public override Sector Read(ushort cyl, byte head, ushort sec)
         {
             // Read from 1..26 -> 0..25
-            Sector fudge = base.Read(cyl, head, (ushort)(sec - 1));
+            var fudge = base.Read(cyl, head, (ushort)(sec - 1));
 
             // But fudge the returned id from 0..25 -> 1..26
             fudge.SectorID++;
@@ -345,19 +345,19 @@ namespace PERQdisk
             Log.Debug(Category.RT11, "OnLoad: maxPhys={0} maxLBN={1}", _maxPhys, _maxLBN);
         }
 
-        private bool Odd(int num)
+        bool Odd(int num)
         {
             return ((num & 0x1) != 0);                      // i am so lazy
         }
 
-        private int[] _skewTable;
+        int[] _skewTable;
 
-        private int _sides;
-        private int _density;
-        private int _tracks;
-        private int _sectorsPerBlock;
-        private int _maxPhys;
+        int _sides;
+        int _density;
+        int _tracks;
+        int _sectorsPerBlock;
+        int _maxPhys;
 
-        private uint _maxLBN;
+        uint _maxLBN;
     }
 }

@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -40,7 +40,7 @@ namespace PERQdisk
     public class MediaCommands
     {
 
-        private bool MediaLoaded()
+        bool MediaLoaded()
         {
             if (!PERQdisk.IsLoaded)
             {
@@ -113,13 +113,13 @@ namespace PERQdisk
 
         [Command("pos show media info", "Show info for the currently loaded media file")]
         [Command("rt11 show media info", "Show info for the currently loaded floppy")]
-        private void ImageInfo()
+        void ImageInfo()
         {
             ShowDeviceSpecs(PERQdisk.Media);
         }
 
         [Command("show media info", "Show info for a media file")]
-        private void ImageInfo([PathExpand] string path)
+        void ImageInfo([PathExpand] string path)
         {
             path = Paths.FindFileInPath(path, ".", FileUtilities.KnownExtensions);
 
@@ -143,7 +143,7 @@ namespace PERQdisk
         /// <summary>
         /// Shows the detailed info for an archived device.
         /// </summary>
-        private void ShowDeviceSpecs(StorageDevice dev)
+        void ShowDeviceSpecs(StorageDevice dev)
         {
             var capMB = dev.Geometry.TotalBytes / 1000000.0;
             var capMiB = dev.Geometry.TotalBytes / 1048576.0;
@@ -181,12 +181,12 @@ namespace PERQdisk
 
         [Command("pos show text label", "Show the loaded file's text label")]
         [Command("rt11 show text label", "Show the loaded floppy's text label")]
-        private void ShowTextLabel()
+        void ShowTextLabel()
         {
             ShowTextLabel(PERQdisk.Media);
         }
 
-        private void ShowTextLabel(StorageDevice dev)
+        void ShowTextLabel(StorageDevice dev)
         {
             Console.Write("Text label:   ");
 
@@ -213,12 +213,12 @@ namespace PERQdisk
 
         [Command("pos show image label", "Show the loaded file's image label")]
         [Command("rt11 show image label", "Show the loaded floppy's image label")]
-        private void ShowImageLabel()
+        void ShowImageLabel()
         {
             ShowImageLabel(PERQdisk.Media);
         }
 
-        private void ShowImageLabel(StorageDevice dev)
+        void ShowImageLabel(StorageDevice dev)
         {
             Console.Write("Image label:  ");
 
@@ -230,7 +230,7 @@ namespace PERQdisk
 
             if (dev.FileInfo.ImageLabel != null)
             {
-                // todo: provide a gui panel/window/popup... or at least try to
+                // Todo: provide a gui panel/window/popup... or at least try to
                 // determine/show the type of image that's attached
                 Console.WriteLine($"{dev.FileInfo.ImageLabel.Length} bytes");
                 return;
@@ -245,7 +245,7 @@ namespace PERQdisk
 
         [Command("pos set filesystem type", "Set flag indicating filesystem type")]
         [Command("rt11 set filesystem type", "Set flag indicating filesystem type")]
-        private void SetFSHint(FilesystemHint fsType)
+        void SetFSHint(FilesystemHint fsType)
         {
             if (fsType != PERQdisk.Media.FileInfo.FSType)
             {
@@ -256,7 +256,7 @@ namespace PERQdisk
         }
 
         [Command("pos set removable", "Set or clear removable media flag")]
-        private void SetRemovable(bool isRemovable)
+        void SetRemovable(bool isRemovable)
         {
             if (isRemovable != PERQdisk.Media.Info.IsRemovable)
             {
@@ -273,7 +273,7 @@ namespace PERQdisk
 
         [Command("pos set archive user", "Set archive's creator name or contact info")]
         [Command("rt11 set archive user", "Set archive's creator name or contact info")]
-        private void SetArchiveBy(string user)
+        void SetArchiveBy(string user)
         {
             if (PERQdisk.Media.FileInfo.ArchivedBy != user)
             {
@@ -292,7 +292,7 @@ namespace PERQdisk
 
         [Command("pos set text label", "Edit text label of loaded media file")]
         [Command("rt11 set text label", "Edit text label of loaded floppy")]
-        private void EditTextLabel()
+        void EditTextLabel()
         {
             EditTextLabel(PERQdisk.Media);
         }
@@ -302,7 +302,7 @@ namespace PERQdisk
         /// at the $EDITOR environment var and uses it if set, otherwise falls
         /// back to 'vi'.  For Windows, notepad.exe is probably the safest bet.
         /// </summary>
-        private void EditTextLabel(StorageDevice dev)
+        void EditTextLabel(StorageDevice dev)
         {
             // Create a unique temp file
             var tmp = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()), ".txt");
@@ -371,7 +371,7 @@ namespace PERQdisk
 
         [Command("pos save", "Save changes to the current media file")]
         [Command("rt11 save", "Save changes to the current floppy")]
-        private void SaveMedia()
+        void SaveMedia()
         {
             if (!PERQdisk.Media.IsModified)
             {
@@ -384,21 +384,21 @@ namespace PERQdisk
 
         [Command("pos save with", "Save current media file in a different format")]
         [Command("rt11 save with", "Save current floppy in a different format")]
-        private void SaveMediaWith(Formatters fmt)
+        void SaveMediaWith(Formatters fmt)
         {
             SaveMediaAs(PERQdisk.Media.Filename, fmt);
         }
 
         [Command("pos save as", "Save current media file with a new name")]
         [Command("rt11 save as", "Save current floppy with a new name")]
-        private void SaveMediaAs([PathExpand] string file)
+        void SaveMediaAs([PathExpand] string file)
         {
             SaveMediaAs(file, PERQdisk.Media.FileInfo.Format);
         }
 
         [Command("pos save as", "Save current media file with a new name and format")]
         [Command("rt11 save as", "Save current floppy with a new name and format")]
-        private void SaveMediaAs([PathExpand] string file, Formatters fmt)
+        void SaveMediaAs([PathExpand] string file, Formatters fmt)
         {
             if (!PERQdisk.Media.CanSaveWithFormat(fmt))
             {

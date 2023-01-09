@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -87,7 +87,7 @@ namespace PERQdisk.POS
         /// <summary>
         /// Reads the disk blocks for this file into memory.
         /// </summary>
-        private void ReadFile()
+        void ReadFile()
         {
             // This is based on trial and error -- FileSize is _not_ used for
             // Directories, but is accurate for Files.  LastBlock+2 _seems_ to
@@ -130,7 +130,7 @@ namespace PERQdisk.POS
         /// <summary>
         /// Get an array of uints (lda's) out of a sector.
         /// </summary>
-        private Address[] SectorDataToLDAs(Sector s)
+        Address[] SectorDataToLDAs(Sector s)
         {
             var addrs = new Address[128];
 
@@ -142,7 +142,7 @@ namespace PERQdisk.POS
             return addrs;
         }
 
-        private int ReadDoubleIndexedBlocks(Address[] indices, int offset, int maxBlocks)
+        int ReadDoubleIndexedBlocks(Address[] indices, int offset, int maxBlocks)
         {
             int blockCount = 0;
 
@@ -152,7 +152,7 @@ namespace PERQdisk.POS
                 if (indices[i].Value <= 0)
                     continue;
 
-                Sector doubleIndirectSector = _disk.GetSector(indices[i]);
+                var doubleIndirectSector = _disk.GetSector(indices[i]);
 
                 // The above points to a sector of indirect blocks
                 blockCount += ReadIndexedBlocks(SectorDataToLDAs(doubleIndirectSector), offset + blockCount * 512, maxBlocks - blockCount);
@@ -166,7 +166,7 @@ namespace PERQdisk.POS
             return blockCount;
         }
 
-        private int ReadIndexedBlocks(Address[] indices, int offset, int maxBlocks)
+        int ReadIndexedBlocks(Address[] indices, int offset, int maxBlocks)
         {
             int blockCount = 0;
             for (int i = 0; i < indices.Length; i++)
@@ -174,7 +174,7 @@ namespace PERQdisk.POS
                 if (indices[i].Value <= 0)
                     continue;
 
-                Sector indirectSector = _disk.GetSector(indices[i]);
+                var indirectSector = _disk.GetSector(indices[i]);
 
                 blockCount += ReadBlocks(SectorDataToLDAs(indirectSector), offset + blockCount * 512, maxBlocks - blockCount);
 
@@ -187,7 +187,7 @@ namespace PERQdisk.POS
             return blockCount;
         }
 
-        private int ReadBlocks(Address[] indices, int offset, int maxBlocks)
+        int ReadBlocks(Address[] indices, int offset, int maxBlocks)
         {
             // Read direct blocks
             for (int i = 0; i < Math.Min(indices.Length, maxBlocks); i++)
@@ -195,7 +195,7 @@ namespace PERQdisk.POS
                 if (indices[i].Value <= 0)
                     continue;
 
-                Sector fileSector = _disk.GetSector(indices[i]);
+                var fileSector = _disk.GetSector(indices[i]);
 
                 if (offset + i * 512 + 512 <= _data.Length)
                 {
@@ -217,10 +217,10 @@ namespace PERQdisk.POS
         }
 
 
-        private LogicalDisk _disk;
-        private Address _address;
-        private Directory _parent;
-        private FileInformationBlock _fib;
-        private byte[] _data;
+        LogicalDisk _disk;
+        Address _address;
+        Directory _parent;
+        FileInformationBlock _fib;
+        byte[] _data;
     }
 }

@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -50,7 +50,7 @@ namespace PERQdisk.POS
             _disk = disk;
 
             // Read the DIB from LBN 0
-            Sector dibSector = _disk.GetSector(new Address(0, true));
+            var dibSector = _disk.GetSector(new Address(0, true));
             _dib = new DeviceInformationBlock(dibSector);
 
             // Partitions loaded when needed (not necessary for device Probe())
@@ -165,7 +165,7 @@ namespace PERQdisk.POS
             return false;
         }
 
-        private int Check(bool test, string name, int weight)
+        int Check(bool test, string name, int weight)
         {
             if (test)
             {
@@ -232,12 +232,12 @@ namespace PERQdisk.POS
         }
 
 
-        private LogicalDisk _disk;
-        private DeviceInformationBlock _dib;
-        private List<Partition> _partitions;
-        private Directory _root;
-        private Directory _path;
+        LogicalDisk _disk;
+        DeviceInformationBlock _dib;
+        List<Partition> _partitions;
+        Directory _root;
+        Directory _path;
 
-        private bool _dryrun;
+        bool _dryrun;
     }
 }

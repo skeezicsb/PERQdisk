@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -472,6 +472,5 @@ namespace PERQdisk.RT11
             // Get and prepend the media file's basename to our default dir!
             return Paths.BuildOutputPath(System.IO.Path.GetFileNameWithoutExtension(_disk.Filename));
         }
-
     }
 }

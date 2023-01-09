@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -123,7 +123,7 @@ namespace PERQdisk
 #endif
         }
 
-        public static string Copyright = "Copyright (c) 2006-2022, J. Dersch (derschjo@gmail.com)\n" +
+        public static string Copyright = "Copyright (c) 2006-2023, J. Dersch (derschjo@gmail.com)\n" +
                                          "Rewritten in 2022 by S. Boondoggle (skeezicsb@gmail.com)";
 
         public static string Version => _version;
@@ -146,9 +146,9 @@ namespace PERQdisk
         /// <summary>
         /// Quick and dirty command line parsing.
         /// </summary>
-        private static CmdLineArgs ParseArgs(string[] args)
+        static CmdLineArgs ParseArgs(string[] args)
         {
-            CmdLineArgs sw = new CmdLineArgs();
+            var sw = new CmdLineArgs();
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -206,14 +206,14 @@ namespace PERQdisk
             public string runScript;
         }
 
-        private static string _version;
-        private static string _baseDir;
+        static string _version;
+        static string _baseDir;
 
-        private static bool _hostIsUnix;
+        static bool _hostIsUnix;
 
-        private static CmdLineArgs _switches;
-        private static CommandProcessor _cli;
-        private static IDiskDevice _dev;
+        static CmdLineArgs _switches;
+        static CommandProcessor _cli;
+        static IDiskDevice _dev;
 
     }
 }

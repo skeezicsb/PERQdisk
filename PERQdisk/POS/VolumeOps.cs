@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -137,7 +137,7 @@ namespace PERQdisk.POS
             }
         }
 
-        private File PartToDirFile(Partition p)
+        File PartToDirFile(Partition p)
         {
             return p.Root.DirFile;
         }
@@ -146,7 +146,7 @@ namespace PERQdisk.POS
         /// Print a formatted directory listing for one directory and return the
         /// total size (in blocks).  Displays the blocks if showSize is true.
         /// </summary>
-        private int DoOneDir(List<File> files, string header, string thisDir, bool showSize)
+        int DoOneDir(List<File> files, string header, string thisDir, bool showSize)
         {
             const int leftCol = 2;
             const int tabWidth = 26;
@@ -371,7 +371,7 @@ namespace PERQdisk.POS
             PrintOneLevel(dir, "", "");
         }
 
-        private void PrintOneLevel(Directory dir, string prefix, string next)
+        void PrintOneLevel(Directory dir, string prefix, string next)
         {
             // Alternates:
             const char T = (char)0x251c;    // 2560 or +
@@ -495,7 +495,7 @@ namespace PERQdisk.POS
         /// Recursively copies directories (including partitions) from the disk
         /// image to the local filesystem.
         /// </summary> 
-        private void CopyRecursive(Directory srcDir, string destDir)
+        void CopyRecursive(Directory srcDir, string destDir)
         {
             Log.Debug(Category.POS, "Starting recursive copy of '{0}' to '{1}'",
                                      srcDir.Name, Paths.Canonicalize(destDir));
@@ -513,7 +513,7 @@ namespace PERQdisk.POS
             }
         }
 
-        private void CopyOne(File srcFile, string destDir)
+        void CopyOne(File srcFile, string destDir)
         {
             // Skip directories; we only do files!
             if (srcFile.IsDirectory) return;
@@ -588,6 +588,5 @@ namespace PERQdisk.POS
             Log.Detail(Category.POS, "CreateOutPath {0} => {1}", sourceFile.SimpleName, hostPath);
             return hostPath;
         }
-
     }
 }

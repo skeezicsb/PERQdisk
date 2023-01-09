@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -182,7 +182,7 @@ namespace PERQemu
             WriteInternal(s, c, fmt, args);
         }
 
-        private static void WriteInternal(Severity s, Category c, string fmt, params object[] args)
+        static void WriteInternal(Severity s, Category c, string fmt, params object[] args)
         {
             // Apply filters before we do the work to format the output
             if ((s >= _consLevel) && ((c & _categories) != 0))
@@ -250,7 +250,7 @@ namespace PERQemu
         /// Sets up a dictionary for mapping Categories to console colors,
         /// to aid in distinguishing output when debugging.
         /// </summary>
-        private static void SetColors()
+        static void SetColors()
         {
             _colors = new Dictionary<Category, ConsoleColor>();
 
@@ -277,15 +277,15 @@ namespace PERQemu
             }
         }
 
-        private static Severity _consLevel;
-        private static Category _categories;
+        static Severity _consLevel;
+        static Category _categories;
 
-        private static Dictionary<Category, ConsoleColor> _colors;
+        static Dictionary<Category, ConsoleColor> _colors;
 
-        private static ConsoleColor _defaultForeground = Console.ForegroundColor;
-        private static ConsoleColor _defaultBackground = Console.BackgroundColor;
+        static ConsoleColor _defaultForeground = Console.ForegroundColor;
+        static ConsoleColor _defaultBackground = Console.BackgroundColor;
 
-        private static string _lastOutput;
-        private static int _repeatCount;
+        static string _lastOutput;
+        static int _repeatCount;
     }
 }
