@@ -644,7 +644,7 @@ namespace PERQdisk.RT11
 
         [Conditional("DEBUG")]
         [Command("rt11 check radix50 encoder", "Run Radix50 codec tests")]
-        private void CheckRad50Encoder()
+        void CheckRad50Encoder()
         {
             Radix50.DumpEncoder();
         }

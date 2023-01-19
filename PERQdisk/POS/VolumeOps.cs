@@ -54,7 +54,11 @@ namespace PERQdisk.POS
                 // since there isn't a real Directory or FIB at the device level
                 items = Resolve(items.DevPart + "*");
 
-                // Fall through!  Re-resolving yields a PartPath.  CHEESE! :-)
+                DoOneDir(items.Partitions.ConvertAll((Partition input) => input.Root.DirFile),
+                             $"Files matching '{items.PartPart}' :",
+                             items.DevPart,
+                             showSize);
+                return;
             }
 
             if (items.IsPartPath)

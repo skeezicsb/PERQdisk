@@ -166,7 +166,7 @@ namespace PERQdisk.POS
         }
 
 
-        private void UpdatePrompt()
+        void UpdatePrompt()
         {
             // Trim any trailing '>' (since the editor appends one)
             var prompt = _volume.Current.Path.TrimEnd('>');
