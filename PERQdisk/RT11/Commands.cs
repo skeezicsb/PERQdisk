@@ -214,6 +214,7 @@ namespace PERQdisk.RT11
             Console.WriteLine($"CONFIRM flag is {_confirm}.");
             Console.WriteLine($"Transfer mode is {_mode}.");
             Console.WriteLine($"Dry run mode is {_volume.DryRun}.");
+            Console.WriteLine($"Batch mode is {PERQdisk.BatchMode}.");
             Console.WriteLine();
             Console.WriteLine($"Floppy contains {filesInUse} (of {Directory.MaxFiles}) files using {blocksInUse} blocks.");
             Console.WriteLine($"There are {_volume.Dir.BlocksFree} free blocks in {chunksFree} chunk" +

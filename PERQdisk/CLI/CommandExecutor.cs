@@ -67,6 +67,9 @@ namespace PERQdisk
 
         public void ExecuteScript(string scriptFile, bool verbose = false)
         {
+            // If launched with a command file in batch mode, always do it verbosely
+            if (PERQdisk.BatchMode) verbose = true;
+
             using (StreamReader sr = new StreamReader(scriptFile))
             {
                 if (verbose) Console.WriteLine($"Reading from '{scriptFile}'...");
@@ -104,8 +107,10 @@ namespace PERQdisk
 
         public void ExecuteLine(string line)
         {
-            // Comments start with "#", just ignore them; blank/empty lines too
-            if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.CurrentCulture))
+            // Comments start with "#" or "!", just ignore them; blank/empty lines too
+            if (string.IsNullOrWhiteSpace(line) ||
+                line.StartsWith("#", StringComparison.CurrentCulture) ||
+                line.StartsWith("!", StringComparison.CurrentCulture))
             {
                 return;
             }

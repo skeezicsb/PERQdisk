@@ -588,14 +588,24 @@ namespace PERQdisk
 
         /// <summary>
         /// Pause for user interaction.  Used in POS and (RT11) FLOPPY command files.
+        /// Ignored if batch mode flag is given at startup for "hands-free" operation.
         /// </summary>
+        [Command("pause")]
         [Command("pos pause", "Pause execution and wait for user to press RETURN")]
         [Command("rt11 pause", "Pause execution and wait for user to press RETURN")]
         void Pause(string message = "")
         {
             Console.WriteLine(message);
             Console.Write("Press RETURN to continue: ");
-            Console.ReadLine();
+
+            if (PERQdisk.BatchMode)
+            {
+                Console.WriteLine("[continuing]");
+            }
+            else
+            {
+                Console.ReadLine();
+            }
         }
 
         [Command("done", Discreet = true)]

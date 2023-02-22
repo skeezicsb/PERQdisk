@@ -39,9 +39,6 @@ namespace PERQdisk
             _baseDir = new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath;
             _baseDir = Path.GetDirectoryName(_baseDir);
 
-            // Don't switch to base dir by default
-            //Environment.CurrentDirectory = _baseDir;
-
             // Set a platform flag
             _hostIsUnix = (Environment.OSVersion.Platform == PlatformID.Unix ||
                            Environment.OSVersion.Platform == PlatformID.MacOSX);
@@ -64,10 +61,11 @@ namespace PERQdisk
 
             if (_switches.printHelp)
             {
-                Console.WriteLine("Usage:  PERQdisk [-h] [-v] [-s <file>] [<disk>]");
+                Console.WriteLine("Usage:  PERQdisk [-h] [-v] [-b] [-s <file>] [<disk>]");
                 Console.WriteLine();
                 Console.WriteLine("\t-h\tprint this help message");
                 Console.WriteLine("\t-v\tprint version information");
+                Console.WriteLine("\t-b\tbatch mode (ignore 'pause' in command files)");
                 Console.WriteLine("\t-s file\tread startup commands from file");
                 Console.WriteLine("\tdisk\tDisk image to load");
                 return;
@@ -76,6 +74,11 @@ namespace PERQdisk
             if (_switches.debug)
             {
                 Log.Categories = Category.All;
+            }
+
+            if (_switches.batchMode)
+            {
+                _batchMode = true;
             }
 
             // Ack!  Make sure we have an actual console to work with
@@ -130,6 +133,7 @@ namespace PERQdisk
         public static string BaseDir => _baseDir;
 
         public static bool HostIsUnix => _hostIsUnix;
+        public static bool BatchMode => _batchMode;
 
         public static CommandProcessor CLI => _cli;
 
@@ -159,6 +163,10 @@ namespace PERQdisk
                 else if (args[i] == "-v")
                 {
                     sw.printVersion = true;
+                }
+                else if (args[i] == "-b")
+                {
+                    sw.batchMode = true;
                 }
                 else if (args[i] == "-d")
                 {
@@ -201,6 +209,7 @@ namespace PERQdisk
         {
             public bool printHelp;
             public bool printVersion;
+            public bool batchMode;
             public bool debug;
             public string disk;
             public string runScript;
@@ -210,6 +219,7 @@ namespace PERQdisk
         static string _baseDir;
 
         static bool _hostIsUnix;
+        static bool _batchMode;
 
         static CmdLineArgs _switches;
         static CommandProcessor _cli;
