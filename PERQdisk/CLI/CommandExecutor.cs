@@ -68,14 +68,11 @@ namespace PERQdisk
         public void ExecuteScript(string scriptFile, bool verbose = false)
         {
             // If launched with a command file in batch mode, always do it verbosely
-            if (PERQdisk.BatchMode) verbose = true;
+            verbose |= PERQdisk.BatchMode;
 
             using (StreamReader sr = new StreamReader(scriptFile))
             {
                 if (verbose) Console.WriteLine($"Reading from '{scriptFile}'...");
-
-                // Scripts always execute from top level
-                CurrentRoot = CommandTreeRoot;
 
                 while (!sr.EndOfStream)
                 {
@@ -118,7 +115,8 @@ namespace PERQdisk
             // A line beginning with an "@" indicates a script to execute
             if (line.StartsWith("@", StringComparison.CurrentCulture))
             {
-                var scriptFile = line.Substring(1);
+                // Try as given, and with .cmd (default extension for command files)
+                var scriptFile = Paths.FindFileInPath(line.Substring(1), "", "cmd");
 
                 ExecuteScript(scriptFile, true);
                 return;

@@ -108,22 +108,13 @@ namespace PERQdisk
         /// </summary>
         public void ReadScript(string script)
         {
-            var curPrefix = _editor.CurrentPrefix;
-
             try
             {
-                ResetPrefix();
-                _exec.ExecuteScript(Paths.Canonicalize(script));
-                SetPrefix(curPrefix);
+                _exec.ExecuteScript(Paths.FindFileInPath(script, "", "cmd"));
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Failed to read {script}: {e.Message}");
-            }
-            finally
-            {
-                // Restore our prefix
-                SetPrefix(curPrefix);
             }
         }
 
@@ -460,6 +451,8 @@ namespace PERQdisk
         [Command("rt11 cd")]
         public void LocalDirectory([PathExpand] string dir)
         {
+            dir = Paths.Canonicalize(dir);
+
             if (System.IO.Directory.Exists(dir))
             {
                 Environment.CurrentDirectory = dir;
@@ -657,7 +650,7 @@ namespace PERQdisk
         public void DebugLevel(Severity level)
         {
             Log.Level = level;
-            Console.WriteLine($"Debug loggin level now {level}.");
+            Console.WriteLine($"Debug logging level now {level}.");
         }
 
         [Command("debug category")]

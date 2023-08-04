@@ -86,7 +86,7 @@ Plans:
 
 1.3  Release Notes (v0.9)
 -------------------------
-S.Boondoggle 10/2/2022
+S.Boondoggle 8/3/2023
 
 This version aims to make PERQdisk a "first class citizen" alongside PERQemu
 as a tool for exploring and manipulating PERQ disk images.  It incorporates
@@ -133,6 +133,7 @@ development offers I'd be delighted to hear from you.
 
 Revision History:
 
+v0.9.5 - 8/3/2023 : updates to parser, small bug fixes, ls command
 v0.9 - 11/27/2022 : rewrite to incorporate tons of new functionality
 v0.2 - 1/18/2022 : updated to use PERQmedia for all file loading!
 v0.1 - 12/20/2009 : updated for new hard disk image format

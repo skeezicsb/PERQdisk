@@ -48,7 +48,7 @@ namespace PERQdisk
             {
                 using (var test = new CRC32Stream(fs))
                 {
-                    CRC32Stream.ResetChecksum();
+                    test.ResetChecksum();
 
                     var buf = new byte[65536];
                     sw.Restart();
@@ -56,7 +56,7 @@ namespace PERQdisk
                     sw.Stop();
 
                     Console.WriteLine("Read {0} bytes in {1}ms", test.Position, sw.ElapsedMilliseconds);
-                    Console.WriteLine("Checksum = {0:x8}", CRC32Stream.ReadCRC);
+                    Console.WriteLine("Checksum = {0:x8}", test.ReadCRC);
                 }
             }
         }

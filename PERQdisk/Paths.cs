@@ -102,40 +102,49 @@ namespace PERQdisk
         /// </summary>
         public static string FindFileInPath(string file, string dir, params string[] extensions)
         {
+            var canonical = Canonicalize(file);
+
+            // Try exact match, as given
             if (File.Exists(file))
             {
-                return Canonicalize(file);
+                return file;
             }
 
+            // Try with possible ~ expansion (Unix)
+            if (File.Exists(canonical))
+            {
+                return canonical;
+            }
+
+            // Exact match with 'dir' prepended
             if (File.Exists(Path.Combine(dir, file)))
             {
                 return Canonicalize(Path.Combine(dir, file));
             }
 
-            // Try the alternate extensions?
+            // Try the canonicalized path with alternate extensions?
             if (extensions.Length > 0)
             {
+                // Back to the beginning
                 var root = file;
 
                 // Remove the current one
                 if (Path.HasExtension(file))
                 {
-                    root = Path.GetFileNameWithoutExtension(file);
+                    root = Path.GetFileNameWithoutExtension(root);
                 }
 
                 foreach (var ext in extensions)
                 {
                     var found = Path.ChangeExtension(root, ext);
-                    if (File.Exists(found))
-                    {
-                        return Canonicalize(found);
-                    }
 
+                    // Do ~ expansion and check with current extension
+                    canonical = Canonicalize(found);
+                    if (File.Exists(canonical)) return canonical;
+
+                    // Try again, but in dir
                     found = Path.Combine(dir, found);
-                    if (File.Exists(found))
-                    {
-                        return Canonicalize(found);
-                    }
+                    if (File.Exists(found)) return Canonicalize(found);
                 }
             }
 
@@ -282,7 +291,7 @@ namespace PERQdisk
 
             return clean;
         }
-        
+
         /// <summary>
         /// Return just the filename portion of a path.
         /// </summary>

@@ -85,16 +85,16 @@ the command set and prompt depending on the type.  This means:
         edited and floppies may be saved in any supported floppy format.
 
 When no image is loaded, the basic prompt is a plain ">" and a limited subset
-of commands is available.  The "list" (or "ls") command looks in the current
-working directory for any eligible media files to load (based on the list of
-known file extensions that PERQmedia can read).  Without arguments, "list"
-looks in the current directory, but if given you can specify another location:
+of commands is available.  The "list" command scans the current directory for
+any eligible media files to load (based on the list of known file extensions
+that PERQmedia can read).  Without arguments, "list" looks in the current
+directory, but if given you can specify another location:
 
 > list
 > list ../PERQemu/Disks
 
-You can use the "cd" and "pwd" commands to move around the local filesystem or
-print out where you are.
+The "ls" command lists all files, regardless of type.  You can use the "cd" and
+"pwd" commands to move around the local filesystem or print out where you are.
 
 To load a file, simply type "load" and the pathname of a file to load.  PERQdisk
 probes the file for a valid filesystem or volume signature, and if found builds
@@ -154,8 +154,10 @@ what input the program expects next.
 
     help        Brief on-line help.  [Incomplete.]
 
-    list, ls    Show the available media archives available in the
+    list        Show the available media archives available in the
                 current directory.
+
+    ls          Show all the files in the current directory.
 
     pwd         Show the current working directory.
 
@@ -527,6 +529,13 @@ here, as almost every POS floppy was written with a command file to map the long
 to short names and back again; commonly a "put.cmd" and "get.cmd" are included
 on the floppy for this purpose.
 
+As of v0.9.5, PERQdisk will look for the named command file as given, appending
+".cmd" automatically if not specified.  Note that all command files execute at
+the CLI level in effect at the time; this is the top-level prompt for any script
+executed at startup with the "-s" flag or at the ">" prompt.  A command file run
+while an RT11 floppy is loaded will expect POS FLOPPY commands, so most put/get
+files should execute as they would on the PERQ.
+
 
 1.5.3  Line Endings
 -------------------
@@ -675,4 +684,4 @@ the PERQemu source distribution (Docs/Magic.txt) for more info.
 
 ---
 
-Last modified:  skeezicsb   Tue Nov 29 02:01:44 PST 2022
+Last modified:  skeezicsb   Thu Aug  3 16:40:02 PDT 2023

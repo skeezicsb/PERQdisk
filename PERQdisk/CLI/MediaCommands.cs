@@ -55,34 +55,36 @@ namespace PERQdisk
 
         // todo:  REALLY need to make "Global=true" work to eliminate this redundancy:
 
-        [Command("list", "List media files in the current directory")]
-        [Command("ls")]
-        [Command("pos list")]
+        [Command("ls", "List all files in a directory")]
         [Command("pos ls")]
-        [Command("rt11 list")]
         [Command("rt11 ls")]
-        public void ListImages()
+        public void ListFiles(string path = "")
         {
-            ListImages(Environment.CurrentDirectory);
+            // Qualify path, expand ~ (Unix)
+            path = string.IsNullOrEmpty(path) ? Environment.CurrentDirectory : Paths.Canonicalize(path);
+            path = path.TrimEnd(Path.DirectorySeparatorChar);
+
+            var matches = new List<string>();
+            matches.AddRange(Directory.EnumerateFileSystemEntries(path, "*"));
+            matches = matches.ConvertAll(s => s.Substring(path.Length + 1));
+
+            // Skip .files (Unix)
+            Console.WriteLine($"Files in {path}:");
+            PERQdisk.CLI.Columnify(matches.FindAll(s => !s.StartsWith(".")).ToArray(), tabWidth: 25);
         }
 
-        [Command("list", "List media files in a given directory")]
-        [Command("ls")]
+        [Command("list", "List media files in a directory")]
         [Command("pos list")]
-        [Command("pos ls")]
         [Command("rt11 list")]
-        [Command("rt11 ls")]
-        public void ListImages([PathExpand] string path)
+        public void ListImages([PathExpand] string path = "")
         {
             var extensions = new HashSet<string>(FileUtilities.KnownExtensions);
             var matches = new List<string>();
 
-            // Handle ~ expansion on Unix
-            path = Paths.Canonicalize(path);
-
             // EnumerateFiles requires a path, and doesn't accept a blank path
             // to mean "use the current directory"
-            if (string.IsNullOrEmpty(path)) path = ".";
+            path = string.IsNullOrEmpty(path) ? Environment.CurrentDirectory : Paths.Canonicalize(path);
+            path = path.TrimEnd(Path.DirectorySeparatorChar);
 
             // Unfortunately, EnumerateFiles also can't take anything beyond a
             // simple wildcard, so we grep for files with known extensions manually.
@@ -97,7 +99,7 @@ namespace PERQdisk
 
             if (matches.Count == 0)
             {
-                Console.WriteLine($"No PERQ media files found in {path}.");
+                Console.WriteLine($"No PERQ media files found in '{path}'.");
                 return;
             }
 
