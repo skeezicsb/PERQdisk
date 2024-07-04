@@ -28,7 +28,7 @@ of those formats are unknown.
 
 1.1  Original Release Notes (v0.0-v0.1)
 ---------------------------------------
-J.Dersch 8/19/2006
+J. Dersch 8/19/2006
 
 PERQdisk is yet another quick-'n-dirty PERQ utility I whipped up to serve a 
 personal need.  Maybe it will serve a need for you as well.  The code is pretty
@@ -57,7 +57,7 @@ e-mail at jdersch@gmail.com.
 
 1.2  Release Notes (v0.2)
 -------------------------
-S.Boondoggle 3/24/2022
+S. Boondoggle 3/24/2022
 
 This is a hacked up version of PERQdisk that uses the new PERQmedia library
 for loading and saving disk images.  It's a client that serves as proof-of-
@@ -86,7 +86,7 @@ Plans:
 
 1.3  Release Notes (v0.9)
 -------------------------
-S.Boondoggle 8/3/2023
+S. Boondoggle 8/3/2023
 
 This version aims to make PERQdisk a "first class citizen" alongside PERQemu
 as a tool for exploring and manipulating PERQ disk images.  It incorporates
@@ -104,6 +104,20 @@ given only as boolean parameters.  This is crude but doesn't impact the core
 functionality (navigating the filesystems and viewing/extracting files).  Many
 CLI improvements to come in subsequent updates.  Additional help, documentation
 and maybe even a nice user's guide to be provided too?
+
+
+1.4  Release Notes (v0.9.6)
+---------------------------
+S. Boondoggle 7/3/2024
+
+Inching toward a 1.0 release, the 0.9.5/0.9.6 updates add a few new features
+and bug fixes.  Most significantly, as PERQemu can now use the 8" Micropolis
+and 5.25" MFM disks, PERQdisk has been extended to read them.  All official
+releases of POS (through G.7) were limited to the first ~32MB of any drive,
+while Accent and PNX could "see" and use all of the space on the largest disks
+that 3RCC/ICL shipped and supported.  This is simply a development/early pre-
+release snapshot to allow interrogation of new PERQ-2 disk images.  See the
+PERQemu repository for the latest updates on emulator development.
 
 
 2.0  About the Source Code
@@ -133,6 +147,7 @@ development offers I'd be delighted to hear from you.
 
 Revision History:
 
+v0.9.6 - 7/3/2024 : fixes to work with 8" and 5.25" disk images > 32MB
 v0.9.5 - 8/3/2023 : updates to parser, small bug fixes, ls command
 v0.9 - 11/27/2022 : rewrite to incorporate tons of new functionality
 v0.2 - 1/18/2022 : updated to use PERQmedia for all file loading!

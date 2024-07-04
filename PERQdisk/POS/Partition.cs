@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2024, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -57,6 +57,7 @@ namespace PERQdisk.POS
             _numberFree = pibSector.ReadDWord(8);
             _rootDirectoryID = new Address(pibSector.ReadDWord(12), true);
             _badSegmentID = new Address(pibSector.ReadDWord(16), true);
+            _partitionRelative = (pibSector.ReadWord(20) == 1);
             _partitionName = pibSector.ReadString(228, 8).TrimEnd();
             _partitionStart = new Address(pibSector.ReadDWord(236), true);
             _partitionEnd = new Address(pibSector.ReadDWord(240), true);
@@ -67,6 +68,7 @@ namespace PERQdisk.POS
         public string PartitionName => _partitionName;
         public uint PartitionType => _partitionType;
         public uint NumberFree => _numberFree;
+        public bool RelativeAddressing => _partitionRelative;
         public Address PartitionStart => _partitionStart;
         public Address PartitionEnd => _partitionEnd;
         public Address PartitionRoot => _partitionRoot;
@@ -86,6 +88,7 @@ namespace PERQdisk.POS
         Address _partitionEnd;
         Address _partitionRoot;
         ushort _partitionType;
+        bool _partitionRelative;
     }
 
 
@@ -118,12 +121,13 @@ namespace PERQdisk.POS
         /// </remarks>
         public void PrintPIBInfo()
         {
-            Console.WriteLine("    {0,-8}  Start: {1,6}  End: {2,6}  Free: {3,6}  Flags: {4}",
+            Console.WriteLine("    {0,-8}  Start: {1,6}  End: {2,6}  Free: {3,6}  Flags: {4},{5}",
                               _pib.PartitionName,
                               _disk.LDAtoLBN(_pib.PartitionStart),
                               _disk.LDAtoLBN(_pib.PartitionEnd),
                               _pib.NumberFree,
-                              (PartitionType)(_pib.PartitionType & 0x3));
+                              (PartitionType)(_pib.PartitionType & 0x3),
+                              _pib.RelativeAddressing ? "PartRel" : "DiskRel");
         }
 
 

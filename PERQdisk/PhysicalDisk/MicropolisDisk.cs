@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2024, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -80,7 +80,7 @@ namespace PERQdisk
             {
                 // CHS to PDA
                 word = (uint)((block.Cylinder << 16) |      // high word
-                             ((block.Head & 0xff) << 8) |  // low word, high byte
+                             ((block.Head & 0xff) << 8) |   // low word, high byte
                               (block.Sector & 0xff));       // low word, low byte
                 
                 addr = new Address(word, false);
@@ -96,56 +96,5 @@ namespace PERQdisk
         // Highest logical block number (LBN)
         public override uint MaxLBN => (uint)(Geometry.TotalBlocks - BootBlocks - 1);
 
-        /// <summary>
-        /// Convert a logical block to a physical block (offset over boot area).
-        /// </summary>
-        public override Block LogicalBlockToPhysicalBlock(Block logBlock)
-        {
-            VerifyLogical(logBlock);
-
-            // Move this forward one track to compensate for the boot area
-            logBlock.Head++;
-
-            if (logBlock.Head >= Geometry.Heads)
-            {
-                logBlock.Head = 0;
-                logBlock.Cylinder++;
-
-                if (logBlock.Cylinder >= Geometry.Cylinders)
-                {
-                    throw new InvalidOperationException("Went off the end of the disk converting to physical.");
-                }
-            }
-
-            logBlock.IsLogical = false;
-
-            return logBlock;
-        }
-
-        public override Block PhysicalBlockToLogicalBlock(Block physBlock)
-        {
-            VerifyPhysical(physBlock);
-
-            // Move back one track to compensate for the boot area
-            if ((physBlock.Head - 1) < 0)
-            {
-                physBlock.Head = (byte)(Geometry.Heads - 1);
-
-                if (physBlock.Cylinder == 0)
-                {
-                    throw new InvalidOperationException("Went off the beginning of the disk converting to logical.");
-                }
-                physBlock.Cylinder--;
-            }
-            else
-            {
-                // Adjust by the size of the boot area (in tracks)
-                physBlock.Head = (byte)(physBlock.Head - 1);
-            }
-
-            physBlock.IsLogical = true;
-
-            return physBlock;
-        }
     }
 }

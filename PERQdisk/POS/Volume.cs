@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2024, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -91,6 +91,12 @@ namespace PERQdisk.POS
             Console.WriteLine("  Device Type: {0}", DIB.DeviceType);
             Console.WriteLine("  Part Type:   {0}", DIB.PartType);
 
+            if (_disk.Info.Type == DeviceType.Disk5Inch)
+            {
+                Console.WriteLine("  Geometry:    C{0}/H{1}/S{2} (boot blocks {3})",
+                                  DIB.Geometry[3], DIB.Geometry[2], DIB.Geometry[1], DIB.Geometry[0]);
+            }
+
             Console.WriteLine("  Start Block: {0}", _disk.LDAtoLBN(DIB.DeviceStart));
             Console.WriteLine("  Last Block:  {0}", _disk.LDAtoLBN(DIB.DeviceEnd));
             Console.WriteLine("  Device Root: {0}", _disk.LDAtoLBN(DIB.DeviceRoot));
@@ -127,6 +133,37 @@ namespace PERQdisk.POS
         public bool CheckVol()
         {
             var weight = 0;
+
+            // Adjust some values if the disk hasn't been fully or properly
+            // initialized.  On a real, captured PERQ disk image these fields
+            // should be set; when creating new images in PERQemu without using
+            // DiskTest/Partition/NewPart to "low level" format the new drive
+            // as the factory would have, it seems sometimes the POS G/Accent
+            // DIB isn't always properly written.  Alert the user if we change
+            // anything (at least in Debug mode?)
+            if (_dib.DeviceStart.Value == 0 && _dib.DeviceEnd.Value == 0)
+            {
+                Log.Info(Category.POS, "Warning: disk may not have been properly initialized; setting DIB");
+                Log.Info(Category.POS, "         DeviceStart and DeviceEnd parameters to defaults, attempting");
+                Log.Info(Category.POS, "         to continue.  Disk may need repair.");
+
+                _dib.DeviceStart = _disk.LBNtoLDA(0);
+                _dib.DeviceRoot = _dib.DeviceStart;
+                _dib.DeviceEnd = _disk.LBNtoLDA(_disk.MaxLBN);
+            }
+
+            // First see if this is a 5.25" disk and check the geometry data
+            if (_disk.Info.Type == DeviceType.Disk5Inch)
+            {
+                // Debug
+                if (Log.Level < Severity.Normal) PrintDIBInfo();
+
+                weight += Check((_dib.Geometry[0] == _disk.BootBlocks), $"BootBlocks {_dib.Geometry[0]}", 10);
+                weight += Check((_dib.Geometry[1] == _disk.Geometry.Sectors), $"Sectors {_dib.Geometry[1]}", 10);
+                weight += Check((_dib.Geometry[2] == _disk.Geometry.Heads), $"Heads {_dib.Geometry[2]}", 10);
+                weight += Check((_dib.Geometry[3] == _disk.Geometry.Cylinders), $"Cyls {_dib.Geometry[3]}", 10);
+                weight += Check((_dib.Geometry[4] != 0), $"Precomp {_dib.Geometry[4]}", 10);
+            }
 
             // Range check some DIB values and balk if they look bogus
             weight += Check((_dib.PartType == PartitionType.Root), $"PartType {_dib.PartType}", 10);
@@ -192,7 +229,7 @@ namespace PERQdisk.POS
 
                 // In a properly initialized Partition Table, empty entries are
                 // LBN 0, but range check them in case they're wacky
-                if (lbn != 0 && lbn < _disk.LDAtoLBN(DIB.DeviceEnd))
+                if (lbn != 0 && lbn < _disk.MaxLBN) // _disk.LDAtoLBN(DIB.DeviceEnd))
                 {
                     // Go for it...
                     _partitions.Add(new Partition(_disk, DIB.PIBEntries[i]));

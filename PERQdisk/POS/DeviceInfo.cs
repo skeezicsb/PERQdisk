@@ -1,9 +1,9 @@
-﻿//
+//
 //  DeviceInfo.cs
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2024, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -57,6 +57,7 @@ namespace PERQdisk.POS
     {
         public DeviceInformationBlock(Sector dibSector)
         {
+            _dibGeom = new ushort[5];
             _bootTable = new Address[26];
             _interpreterTable = new Address[26];
             _pibEntries = new Address[64];
@@ -66,6 +67,12 @@ namespace PERQdisk.POS
 
         void BuildData(Sector dibSector)
         {
+            // For 5.25" drives, read in the geometry words
+            for (int i = 0; i < _dibGeom.Length; i++)
+            {
+                _dibGeom[i] = dibSector.ReadWord(i * 2);
+            }
+
             // Read boot and interpreter tables (PDAs)
             for (int i = 0; i < _bootTable.Length; i++)
             {
@@ -96,20 +103,36 @@ namespace PERQdisk.POS
         public DeviceCode DeviceType => _deviceType;
         public PartitionType PartType => _partType;
 
-        public Address DeviceRoot => _deviceRoot;
-        public Address DeviceStart => _deviceStart;
-        public Address DeviceEnd => _deviceEnd;
+        public Address DeviceRoot
+        {
+            get { return _deviceRoot; }
+            set { _deviceRoot = value; }
+        }
+
+        public Address DeviceStart
+        {
+            get { return _deviceStart; }
+            set { _deviceStart = value; }
+        }
+
+        public Address DeviceEnd
+        {
+            get { return _deviceEnd; }
+            set { _deviceEnd = value; }
+        }
 
         public Address[] BootTable => _bootTable;
         public Address[] InterpreterTable => _interpreterTable;
         public Address[] PIBEntries => _pibEntries;
 
+        public ushort[] Geometry => _dibGeom;
 
         // Constants
         const int BootTableStart = 20;
         const int InterpreterTableStart = 124;
         const int PartitionTableStart = 244;
 
+        ushort[] _dibGeom;
         Address[] _bootTable;
         Address[] _interpreterTable;
         string _deviceName;

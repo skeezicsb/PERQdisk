@@ -3,7 +3,7 @@
 //
 //  Author:  S. Boondoggle <skeezicsb@gmail.com>
 //
-//  Copyright (c) 2022-2023, Boondoggle Heavy Industries, Ltd.
+//  Copyright (c) 2022-2024, Boondoggle Heavy Industries, Ltd.
 //
 //  This file is part of PERQdisk and/or PERQemu, originally written by
 //  and Copyright (c) 2006, Josh Dersch <derschjo@gmail.com>
@@ -96,12 +96,60 @@ namespace PERQdisk
         /// <summary>
         /// Adjust for boot sector (CHS -> CHS translation).
         /// </summary>
-        public abstract Block PhysicalBlockToLogicalBlock(Block physBlock);
+        public virtual Block PhysicalBlockToLogicalBlock(Block physBlock)
+        {
+            VerifyPhysical(physBlock);
+
+            // How many tracks (heads) to offset the boot area
+            var offset = (BootBlocks / Geometry.Sectors);
+
+            // Move back n tracks to compensate for the boot area
+            if ((physBlock.Head - offset) < 0)
+            {
+                physBlock.Head = (byte)(physBlock.Head - offset + Geometry.Heads);
+
+                if (physBlock.Cylinder == 0)
+                {
+                    throw new InvalidOperationException("Went off the beginning of the disk converting to logical.");
+                }
+                physBlock.Cylinder--;
+            }
+            else
+            {
+                // Adjust by the size of the boot area (in tracks)
+                physBlock.Head = (byte)(physBlock.Head - offset);
+            }
+
+            physBlock.IsLogical = true;
+
+            return physBlock;
+        }
 
         /// <summary>
         /// Adjust for boot sector, in reverse (CHS -> CHS translation).
         /// </summary>
-        public abstract Block LogicalBlockToPhysicalBlock(Block logBlock);
+        public virtual Block LogicalBlockToPhysicalBlock(Block logBlock)
+        {
+            VerifyLogical(logBlock);
+
+            // Skip forward n tracks to compensate for the boot area
+            logBlock.Head += (byte)(BootBlocks / Geometry.Sectors);
+
+            if (logBlock.Head >= Geometry.Heads)
+            {
+                logBlock.Head -= Geometry.Heads;
+                logBlock.Cylinder++;
+
+                if (logBlock.Cylinder >= Geometry.Cylinders)
+                {
+                    throw new InvalidOperationException("Went off the end of the disk converting to physical.");
+                }
+            }
+
+            logBlock.IsLogical = false;
+
+            return logBlock;
+        }
 
 
         protected void VerifyPhysical(Block physBlock)
