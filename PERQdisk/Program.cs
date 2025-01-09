@@ -123,7 +123,7 @@ namespace PERQdisk
 #endif
         }
 
-        public static string Copyright = "Copyright (c) 2006-2023, J. Dersch (derschjo@gmail.com)\n" +
+        public static string Copyright = "Copyright (c) 2006-2025, J. Dersch (derschjo@gmail.com)\n" +
                                          "Rewritten in 2022 by S. Boondoggle (skeezicsb@gmail.com)";
 
         public static string Version => _version;

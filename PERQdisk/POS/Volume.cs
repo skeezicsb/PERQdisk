@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 using PERQemu;
 using PERQmedia;
@@ -83,6 +84,15 @@ namespace PERQdisk.POS
         }
 
         /// <summary>
+        /// Return true if a string contains a valid POS/Accent device or partition
+        /// name:  7-bit ASCII, letters, digits, . _ + - (according to FS docs).
+        /// </summary>
+        public bool NameIsValid(string name)
+        {
+            return !string.IsNullOrWhiteSpace(Regex.Replace(name, @"[^\w._$+-]", ""));
+        }
+
+        /// <summary>
         /// Dumps interesting info from the Volume's DIB to screen.
         /// </summary>
         public void PrintDIBInfo()
@@ -132,7 +142,8 @@ namespace PERQdisk.POS
         /// </summary>
         public bool CheckVol()
         {
-            var weight = 0;
+            const int THRESHOLD = 75;   // You must be at least this tall to ride
+            int weight = 0;
 
             // Adjust some values if the disk hasn't been fully or properly
             // initialized.  On a real, captured PERQ disk image these fields
@@ -166,6 +177,8 @@ namespace PERQdisk.POS
             }
 
             // Range check some DIB values and balk if they look bogus
+            weight += Check(NameIsValid(_dib.DeviceName), $"PartName '{_dib.DeviceName}'", 20);
+
             weight += Check((_dib.PartType == PartitionType.Root), $"PartType {_dib.PartType}", 10);
 
             weight += Check((_disk.LDAtoLBN(DIB.DeviceStart) == 0), $"DevStart {_dib.DeviceStart}", 10);
@@ -192,7 +205,7 @@ namespace PERQdisk.POS
             // Have to have at least one valid partition!
             weight += Check((goodParts > 0), "MinValidParts", 10);
 
-            if (weight > 50)
+            if (weight >= THRESHOLD)
             {
                 Log.Debug(Category.POS, "Probe looks good to me... weight = {0}", weight);
                 return true;
@@ -228,8 +241,11 @@ namespace PERQdisk.POS
                 var lbn = _disk.LDAtoLBN(DIB.PIBEntries[i]);
 
                 // In a properly initialized Partition Table, empty entries are
-                // LBN 0, but range check them in case they're wacky
-                if (lbn != 0 && lbn < _disk.MaxLBN) // _disk.LDAtoLBN(DIB.DeviceEnd))
+                // LBN 0, but range check them in case they're wacky.  NB: for
+                // now just make sure it lands in the range of valid LBNs, as
+                // DIB.DeviceEnd may not be initialized.  We don't bother to check
+                // that the partition starts on a cylinder boundary...
+                if (lbn != 0 && lbn < _disk.MaxLBN)
                 {
                     // Go for it...
                     _partitions.Add(new Partition(_disk, DIB.PIBEntries[i]));
@@ -244,7 +260,7 @@ namespace PERQdisk.POS
         /// and add the partition names as its children.  That way the tree is
         /// anchored by a single root and makes pathname hacking much simpler.
         /// </summary>
-        public void LoadDirectory()
+        public void LoadRootDirectory()
         {
             if (_partitions == null) ReadPartitionInfo();
 
@@ -259,12 +275,17 @@ namespace PERQdisk.POS
             // Now load each partition and splice it in
             foreach (var part in _partitions)
             {
-                part.LoadDirectory(_root);
-                _root.Children.Add(part.Root);
+                if (NameIsValid(part.Name) && part.LoadDirectory(_root))
+                    _root.Children.Add(part.Root);
+            }
+
+            // If none of the partitions had a valid ROOT.DR, we're hosed
+            if (_root.Children.Count == 0)
+            {
+                throw new InvalidOperationException("Device has no valid root directories!");
             }
 
             _path = _root;
-
             Log.Info(Category.POS, "Directory loaded: {0} partitions", _partitions.Count);
         }
 

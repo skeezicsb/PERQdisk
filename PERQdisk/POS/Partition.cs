@@ -24,6 +24,7 @@
 
 using System;
 
+using PERQemu;
 using PERQmedia;
 
 namespace PERQdisk.POS
@@ -77,7 +78,6 @@ namespace PERQdisk.POS
         public Address FreeHead => _freeHead;
         public Address FreeTail => _freeTail;
 
-
         Address _freeHead;
         Address _freeTail;
         uint _numberFree;
@@ -111,7 +111,6 @@ namespace PERQdisk.POS
 
         public Directory Root => _root;
 
-
         /// <summary>
         /// Prints the PIB contents in a nice one-line summary.
         /// </summary>
@@ -136,7 +135,7 @@ namespace PERQdisk.POS
         /// traverses the entire filesystem to populate the tree.  Sets _root
         /// when complete.
         /// </summary>
-        public void LoadDirectory(Directory parent)
+        public bool LoadDirectory(Directory parent)
         {
             // Load the FIB for ROOT.DR
             var rootDir = new File(_disk, _root, _pib.RootDirectoryID);
@@ -144,7 +143,8 @@ namespace PERQdisk.POS
             // Make sure this is a valid root!
             if (!rootDir.IsDirectory)
             {
-                throw new InvalidOperationException($"Partition {Name} has invalid ROOT.DR!");
+                Log.Warn(Category.POS, "Partition {0} has invalid ROOT.DR!", Name);
+                return false;
             }
 
             // Change ROOT.DR -> <part>.DR
@@ -152,6 +152,7 @@ namespace PERQdisk.POS
 
             // And away we go!
             _root = new Directory(_disk, rootDir, parent, 1);
+            return true;
         }
 
 

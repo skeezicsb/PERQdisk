@@ -147,6 +147,7 @@ development offers I'd be delighted to hear from you.
 
 Revision History:
 
+v0.9.7 - 1/8/2025 : uh, bug fixes i forgot to check in months ago?
 v0.9.6 - 7/3/2024 : fixes to work with 8" and 5.25" disk images > 32MB
 v0.9.5 - 8/3/2023 : updates to parser, small bug fixes, ls command
 v0.9 - 11/27/2022 : rewrite to incorporate tons of new functionality

@@ -150,16 +150,18 @@ namespace PERQdisk
         /// A hack to run a command without having to root around in the tree
         /// or instantiating the command's class to find the method.  Oof.
         /// </summary>
-        void RunCommand(string cmd)
+        bool RunCommand(string cmd)
         {
             try
             {
                 _exec.ExecuteLine(cmd);
+                return true;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.InnerException?.Message);
+                return false;
             }
         }
 
@@ -468,9 +470,8 @@ namespace PERQdisk
         {
             IDiskDevice dev;
 
-            path = Paths.FindFileInPath(path, ".", FileUtilities.KnownExtensions);
-
-            var type = FileUtilities.GetDeviceTypeFromFile(path);
+            var file = Paths.FindFileInPath(path, ".", FileUtilities.KnownExtensions);
+            var type = FileUtilities.GetDeviceTypeFromFile(file);
 
             switch (type)
             {
@@ -482,27 +483,26 @@ namespace PERQdisk
                     //
                     dev = new POS.Device();
 
-                    if (dev.Probe(path))
+                    if (dev.Probe(file))
                     {
-                        if (dev.Mount(path))
+                        if (dev.Mount(file))
                         {
                             PERQdisk.Dev = dev;
-                            RunCommand("pos");
-                            return;
+                            if (RunCommand("pos")) return;
                         }
                         // Fall through to check for an RT11 volume
                     }
 
                     dev = new RT11.Device();
 
-                    if (dev.Probe(path))
+                    if (dev.Probe(file))
                     {
-                        if (dev.Mount(path))
+                        if (dev.Mount(file))
                         {
                             PERQdisk.Dev = dev;
-                            RunCommand("rt11");
-                            return;
+                            if (RunCommand("rt11")) return;
                         }
+                        // Someday attempt to identify PNX floppies
                     }
 
                     Console.WriteLine("Could not determine volume type; Are you sure this a PERQ floppy?");
@@ -512,19 +512,22 @@ namespace PERQdisk
                 case DeviceType.Disk8Inch:
                 case DeviceType.Disk5Inch:
                     //
-                    // Only POS filesystems are supported; probe for PNX in future
+                    // POS, MPOS and Accent use the same filesystem structures
+                    // and are by far the most common; check that first
                     //
                     dev = new POS.Device();
 
-                    if (dev.Probe(path))
+                    if (dev.Probe(file))
                     {
-                        if (dev.Mount(path))
+                        if (dev.Mount(file))
                         {
                             PERQdisk.Dev = dev;
-                            RunCommand("pos");
-                            return;
+                            if (RunCommand("pos")) return;
                         }
+                        // Fall through for PNX hard disks (someday)
                     }
+
+                    Console.WriteLine("Could not load the hard disk image; is this a PNX disk? (Unsupported)");
                     break;
 
                 case DeviceType.TapeQIC:
@@ -540,7 +543,7 @@ namespace PERQdisk
                     break;
             }
 
-            Console.WriteLine($"Failed to load from '{path}'.");
+            Console.WriteLine($"Failed to load from '{file}'.");
         }
 
 

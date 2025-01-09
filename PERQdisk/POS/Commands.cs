@@ -61,13 +61,11 @@ namespace PERQdisk.POS
                 throw new InvalidOperationException("POS disk not loaded");
             }
 
-            // A bit of cheese
-            Console.Title += $" - {_disk.Filename}";
-
             _volume = new Volume(_disk);
             _volume.ReadPartitionInfo();
-            _volume.LoadDirectory();
+            _volume.LoadRootDirectory();
 
+            Console.Title += $" - {_disk.Filename}";
             Console.WriteLine("POS volume mounted.");
 
             PERQdisk.CLI.SetPrefix("pos");
